@@ -1,0 +1,2671 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WanderWise | Your AI Travel Companion</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CDN for high-quality utilities -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            DEFAULT: '#14B8A6',
+                            600: '#0D9488',
+                            700: '#0F766E',
+                        },
+                        navy: {
+                            DEFAULT: '#1A1A2E',
+                            900: '#16213E',
+                            800: '#1A1A2E',
+                        },
+                        coral: {
+                            DEFAULT: '#FF8E72',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --primary-teal: #14B8A6;
+            --dark-navy: #1A1A2E;
+            --coral-accent: #FF8E72;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .heading-font {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Hero CSS Background */
+        .hero-bg {
+            background: linear-gradient(135deg, var(--dark-navy) 0%, #16213E 50%, var(--primary-teal) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Soft travel illustrations using CSS gradients/shapes */
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(20, 184, 166, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            right: 5%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 142, 114, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Fade-in Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Pricing Badge Hover */
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Timeline Connector */
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: #E5E7EB;
+            z-index: 0;
+        }
+
+        @media (max-width: 768px) {
+            .timeline-line {
+                left: 20px;
+            }
+        }
+
+        /* Sidebar active state */
+        .nav-active {
+            background-color: #E2E8F0;
+            color: var(--primary-teal);
+            border-right: 3px solid var(--primary-teal);
+        }
+        
+        .chip {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .chip-active {
+            background-color: var(--primary-teal) !important;
+            color: white !important;
+            border-color: var(--primary-teal) !important;
+        }
+
+        .select-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .select-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(20, 184, 166, 0.3);
+        }
+
+        .select-card.active {
+            border-color: var(--primary-teal);
+            background-color: rgba(20, 184, 166, 0.05);
+        }
+
+        .progress-bar-fill {
+            transition: width 0.5s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .nav-active {
+                border-right: none;
+                border-top: 3px solid var(--primary-teal);
+            }
+        }
+
+        .hidden-view {
+            display: none !important;
+        }
+
+        /* Tab content animation */
+        .tab-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-[#F8F9FA] text-navy-900">
+
+    <!-- VIEW 1: LANDING PAGE -->
+    <div id="landing-view">
+        <!-- Sticky Navbar -->
+        <nav class="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <!-- Logo -->
+                    <div class="flex items-center gap-2 cursor-pointer">
+                        <div class="bg-teal p-2 rounded-lg">
+                            <i data-lucide="compass" class="text-white w-6 h-6"></i>
+                        </div>
+                        <span class="text-2xl font-bold heading-font text-navy">WanderWise</span>
+                    </div>
+
+                    <!-- Desktop Nav -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="#features" class="text-gray-600 hover:text-teal font-medium transition-colors">Features</a>
+                        <a href="#how-it-works" class="text-gray-600 hover:text-teal font-medium transition-colors">How It Works</a>
+                        <a href="#pricing" class="text-gray-600 hover:text-teal font-medium transition-colors">Pricing</a>
+                        <button onclick="switchToApp()" class="bg-teal text-white px-6 py-2.5 rounded-full font-semibold hover:bg-teal-700 transition-all shadow-md active:scale-95">
+                            Get Started
+                        </button>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="md:hidden">
+                        <button id="mobile-menu-btn" class="p-2 text-navy">
+                            <i data-lucide="menu" class="w-8 h-8"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-4">
+                <a href="#features" class="block text-gray-600 font-medium py-2">Features</a>
+                <a href="#how-it-works" class="block text-gray-600 font-medium py-2">How It Works</a>
+                <a href="#pricing" class="block text-gray-600 font-medium py-2">Pricing</a>
+                <button onclick="switchToApp()" class="w-full bg-teal text-white py-3 rounded-full font-semibold shadow-md">
+                    Get Started
+                </button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero-bg pt-32 pb-20 md:pt-48 md:pb-32 px-4">
+            <div class="max-w-7xl mx-auto text-center relative z-10">
+                <h1 class="text-4xl md:text-7xl font-bold text-white mb-6 heading-font leading-tight fade-in">
+                    Your AI-Powered <br class="hidden md:block"> Travel Companion
+                </h1>
+                <p class="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10 fade-in delay-200">
+                    Plan your next adventure in seconds with smart itineraries, local discoveries, and real-time budget tracking.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 fade-in delay-400">
+                    <button onclick="switchToApp()" class="w-full sm:w-auto bg-teal text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-teal-700 transition-all shadow-lg hover:shadow-teal-500/30">
+                        Start Planning Now
+                    </button>
+                    <button class="w-full sm:w-auto bg-white/10 backdrop-blur-md text-white border border-white/20 px-8 py-4 rounded-full text-lg font-bold hover:bg-white/20 transition-all">
+                        Watch Demo
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Hero Illustration (Pure CSS "Illustration") -->
+            <div class="max-w-4xl mx-auto mt-16 md:mt-24 relative fade-in delay-500">
+                <div class="bg-navy-900/50 backdrop-blur-xl rounded-t-3xl border-t border-x border-white/20 p-4 shadow-2xl overflow-hidden aspect-[16/9] flex items-center justify-center">
+                    <!-- Abstract CSS Landscape -->
+                    <div class="relative w-full h-full bg-gradient-to-b from-sky-400/20 to-teal-900/40 rounded-t-2xl">
+                        <!-- Mountains -->
+                        <div class="absolute bottom-0 left-0 w-full h-1/2 flex items-end">
+                            <div class="w-1/2 h-full bg-navy/40 skew-y-12 translate-y-8"></div>
+                            <div class="w-1/2 h-full bg-navy/60 -skew-y-12 translate-y-8"></div>
+                        </div>
+                        <!-- Sun -->
+                        <div class="absolute top-10 right-20 w-16 h-16 bg-coral/40 rounded-full blur-xl animate-pulse"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Grid -->
+        <section id="features" class="py-24 px-4 bg-white">
+            <div class="max-w-7xl mx-auto text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold heading-font text-navy mb-4 fade-in">Packed with Travel Intelligence</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto fade-in">Everything you need for a stress-free journey, powered by advanced AI and simple design.</p>
+            </div>
+
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="p-8 rounded-3xl border border-gray-100 hover:border-teal/30 hover:bg-teal/5 transition-all group fade-in">
+                    <div class="w-14 h-14 bg-teal/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-teal group-hover:text-white transition-colors">
+                        <i data-lucide="map" class="w-7 h-7 text-teal group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 heading-font text-navy">AI Trip Planner</h3>
+                    <p class="text-gray-600 leading-relaxed">Personalized multi-day itineraries crafted uniquely for your interests and pace.</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="p-8 rounded-3xl border border-gray-100 hover:border-teal/30 hover:bg-teal/5 transition-all group fade-in delay-100">
+                    <div class="w-14 h-14 bg-teal/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-teal group-hover:text-white transition-colors">
+                        <i data-lucide="mountain" class="w-7 h-7 text-teal group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 heading-font text-navy">City Explorer</h3>
+                    <p class="text-gray-500 leading-relaxed">Discover hidden gems and local favorites beyond the typical tourist traps.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="p-8 rounded-3xl border border-gray-100 hover:border-teal/30 hover:bg-teal/5 transition-all group fade-in delay-200">
+                    <div class="w-14 h-14 bg-teal/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-teal group-hover:text-white transition-colors">
+                        <i data-lucide="wallet" class="w-7 h-7 text-teal group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 heading-font text-navy">Budget Tracker</h3>
+                    <p class="text-gray-500 leading-relaxed">Smart expense logging with group splitting and currency conversion built-in.</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="p-8 rounded-3xl border border-gray-100 hover:border-teal/30 hover:bg-teal/5 transition-all group fade-in delay-300">
+                    <div class="w-14 h-14 bg-teal/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-teal group-hover:text-white transition-colors">
+                        <i data-lucide="message-square" class="w-7 h-7 text-teal group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 heading-font text-navy">AI Concierge Globi</h3>
+                    <p class="text-gray-500 leading-relaxed">24/7 travel assistant ready to help with translations, bookings, and troubleshooting.</p>
+                </div>
+                <!-- Card 5 -->
+                <div class="p-8 rounded-3xl border border-gray-100 hover:border-teal/30 hover:bg-teal/5 transition-all group fade-in delay-400">
+                    <div class="w-14 h-14 bg-teal/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-teal group-hover:text-white transition-colors">
+                        <i data-lucide="bar-chart-2" class="w-7 h-7 text-teal group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 heading-font text-navy">Travel Insights</h3>
+                    <p class="text-gray-500 leading-relaxed">Analyze your travel style and get better recommendations over time.</p>
+                </div>
+                <!-- Card 6 -->
+                <div class="p-8 rounded-3xl border border-gray-100 hover:border-teal/30 hover:bg-teal/5 transition-all group fade-in delay-500">
+                    <div class="w-14 h-14 bg-teal/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-teal group-hover:text-white transition-colors">
+                        <i data-lucide="mail" class="w-7 h-7 text-teal group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 heading-font text-navy">Email Itineraries</h3>
+                    <p class="text-gray-500 leading-relaxed">Export your plans to PDF or share via email with one simple tap.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works (Timeline) -->
+        <section id="how-it-works" class="py-24 px-4 bg-gray-50 overflow-hidden">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-20">
+                    <h2 class="text-3xl md:text-5xl font-bold heading-font text-navy mb-4 fade-in">From Dream to Destination</h2>
+                    <p class="text-gray-500 max-w-2xl mx-auto fade-in">Set up your perfect journey in 4 easy steps.</p>
+                </div>
+
+                <div class="relative max-w-4xl mx-auto">
+                    <!-- Desktop Connector -->
+                    <div class="timeline-line hidden md:block"></div>
+
+                    <!-- Step 1 -->
+                    <div class="relative flex flex-col md:flex-row items-center mb-16 fade-in">
+                        <div class="flex-1 md:text-right md:pr-12 mb-4 md:mb-0">
+                            <h4 class="text-2xl font-bold text-navy mb-2">Set Your Preferences</h4>
+                            <p class="text-gray-500">Pick your destination, dates, and what you love doing most.</p>
+                        </div>
+                        <div class="w-12 h-12 bg-teal text-white rounded-full flex items-center justify-center font-bold z-10 shadow-lg shrink-0">1</div>
+                        <div class="flex-1 md:pl-12"></div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="relative flex flex-col md:flex-row-reverse items-center mb-16 fade-in delay-200">
+                        <div class="flex-1 md:text-left md:pl-12 mb-4 md:mb-0">
+                            <h4 class="text-2xl font-bold text-navy mb-2">AI Generation</h4>
+                            <p class="text-gray-500">Globi generates a fully custom itinerary based on real-time data.</p>
+                        </div>
+                        <div class="w-12 h-12 bg-coral text-white rounded-full flex items-center justify-center font-bold z-10 shadow-lg shrink-0">2</div>
+                        <div class="flex-1 md:pr-12"></div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="relative flex flex-col md:flex-row items-center mb-16 fade-in delay-400">
+                        <div class="flex-1 md:text-right md:pr-12 mb-4 md:mb-0">
+                            <h4 class="text-2xl font-bold text-navy mb-2">Refine & Customize</h4>
+                            <p class="text-gray-500">Swap activities, adjust timings, and finalize your travel budget.</p>
+                        </div>
+                        <div class="w-12 h-12 bg-navy text-white rounded-full flex items-center justify-center font-bold z-10 shadow-lg shrink-0">3</div>
+                        <div class="flex-1 md:pl-12"></div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="relative flex flex-col md:flex-row-reverse items-center fade-in delay-600">
+                        <div class="flex-1 md:text-left md:pl-12 mb-4 md:mb-0">
+                            <h4 class="text-2xl font-bold text-navy mb-2">Bon Voyage!</h4>
+                            <p class="text-gray-500">Access your maps, bookings, and tips anywhere, even offline.</p>
+                        </div>
+                        <div class="w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center font-bold z-10 shadow-lg shrink-0">4</div>
+                        <div class="flex-1 md:pr-12"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="py-24 px-4 bg-white">
+            <div class="max-w-7xl mx-auto text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold heading-font text-navy mb-4 fade-in">Simple Travel Plans</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto fade-in">Choose the right path for your next adventure.</p>
+            </div>
+
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Free -->
+                <div class="pricing-card p-10 rounded-3xl border border-gray-100 bg-gray-50/50 transition-all flex flex-col fade-in">
+                    <h3 class="text-xl font-bold text-gray-600 mb-2">Free</h3>
+                    <div class="text-4xl font-bold text-navy mb-6">$0 <span class="text-sm font-normal text-gray-400">/ forever</span></div>
+                    <ul class="space-y-4 mb-10 flex-grow">
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="text-teal w-5 h-5"></i>
+                            1 AI Trip Plan per month
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="text-teal w-5 h-5"></i>
+                            Basic Budget Tracking
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="text-teal w-5 h-5"></i>
+                            Public City Guides
+                        </li>
+                    </ul>
+                    <button onclick="switchToApp()" class="w-full py-4 rounded-xl font-bold text-teal border-2 border-teal hover:bg-teal hover:text-white transition-all">Start Free</button>
+                </div>
+
+                <!-- Explorer -->
+                <div class="pricing-card p-10 rounded-3xl border-2 border-teal bg-white ring-4 ring-teal/5 shadow-xl transition-all flex flex-col relative fade-in delay-200">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-teal text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Most Popular</div>
+                    <h3 class="text-xl font-bold text-teal mb-2">Explorer</h3>
+                    <div class="text-4xl font-bold text-navy mb-6">$9 <span class="text-sm font-normal text-gray-400">/ month</span></div>
+                    <ul class="space-y-4 mb-10 flex-grow">
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="text-teal w-5 h-5"></i>
+                            Unlimited AI Trip Plans
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="text-teal w-5 h-5"></i>
+                            Advanced Budget Splitter
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="text-teal w-5 h-5"></i>
+                            Offline Map Support
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="text-teal w-5 h-5"></i>
+                            Priority Globi Assistant
+                        </li>
+                    </ul>
+                    <button onclick="switchToApp()" class="w-full py-4 rounded-xl font-bold bg-teal text-white hover:bg-teal-700 transition-all shadow-lg shadow-teal-500/20">Go Explorer</button>
+                </div>
+
+                <!-- Wanderer -->
+                <div class="pricing-card p-10 rounded-3xl border border-gray-100 bg-gray-50/50 transition-all flex flex-col fade-in delay-400">
+                    <h3 class="text-xl font-bold text-gray-600 mb-2">Wanderer</h3>
+                    <div class="text-4xl font-bold text-navy mb-6">$24 <span class="text-sm font-normal text-gray-400">/ month</span></div>
+                    <ul class="space-y-4 mb-10 flex-grow">
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="text-teal w-5 h-5"></i>
+                            Everything in Explorer
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="text-teal w-5 h-5"></i>
+                            Personal Travel Concierge
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="text-teal w-5 h-5"></i>
+                            Lounge Access (Global)
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="text-teal w-5 h-5"></i>
+                            Travel Insurance Inclusion
+                        </li>
+                    </ul>
+                    <button onclick="switchToApp()" class="w-full py-4 rounded-xl font-bold text-navy border-2 border-navy hover:bg-navy hover:text-white transition-all">Go Wanderer</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="py-24 px-4 bg-navy text-white">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-5xl font-bold heading-font mb-4 fade-in">Loved by Globetrotters</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Stat 1 -->
+                    <div class="glass-card p-8 rounded-3xl fade-in">
+                        <div class="flex gap-1 text-coral mb-4">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-lg italic mb-6">"Globi literally saved my trip when my flight got cancelled in Kyoto. It found a shuttle and a hotel in 2 minutes."</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-teal flex items-center justify-center font-bold">JD</div>
+                            <div>
+                                <h5 class="font-bold">Julianne Doe</h5>
+                                <span class="text-white/50 text-sm">Solo Traveller</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Stat 2 -->
+                    <div class="glass-card p-8 rounded-3xl fade-in delay-200">
+                        <div class="flex gap-1 text-coral mb-4">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-lg italic mb-6">"Planning family trips used to be a nightmare. WanderWise makes it feel like we have a professional agent in our pocket."</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-coral flex items-center justify-center font-bold">MK</div>
+                            <div>
+                                <h5 class="font-bold">Marcus King</h5>
+                                <span class="text-white/50 text-sm">Family Explorer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Stat 3 -->
+                    <div class="glass-card p-8 rounded-3xl fade-in delay-400">
+                        <div class="flex gap-1 text-coral mb-4">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-lg italic mb-6">"The budget tracking is scarily accurate. It even split our dinner bills across 4 currencies without a single error."</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-teal flex items-center justify-center font-bold">SL</div>
+                            <div>
+                                <h5 class="font-bold">Sarah Lee</h5>
+                                <span class="text-white/50 text-sm">Digital Nomad</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Banner -->
+        <section class="py-20 px-4">
+            <div class="max-w-7xl mx-auto rounded-3xl bg-teal overflow-hidden relative p-12 text-center text-white">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                <h2 class="text-3xl md:text-5xl font-bold heading-font mb-6 relative z-10">Ready to Explore the World Smartly?</h2>
+                <p class="text-xl text-white/80 mb-10 max-w-2xl mx-auto relative z-10">Join 50,000+ travellers who have upgraded their journey with WanderWise.</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
+                    <button onclick="switchToApp()" class="bg-white text-teal px-10 py-5 rounded-full text-xl font-bold shadow-2xl hover:bg-gray-100 transition-all">Get Started for Free</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-50 pt-20 pb-10 border-t border-gray-100 px-4">
+            <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
+                <div>
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="bg-teal p-1.5 rounded-md">
+                            <i data-lucide="compass" class="text-white w-5 h-5"></i>
+                        </div>
+                        <span class="text-xl font-bold heading-font text-navy">WanderWise</span>
+                    </div>
+                    <p class="text-gray-500 mb-6">Your intelligent portal to the world's most beautiful destinations.</p>
+                    <div class="flex space-x-4">
+                        <i data-lucide="twitter" class="w-6 h-6 text-gray-400 hover:text-teal cursor-pointer"></i>
+                        <i data-lucide="instagram" class="w-6 h-6 text-gray-400 hover:text-teal cursor-pointer"></i>
+                        <i data-lucide="linkedin" class="w-6 h-6 text-gray-400 hover:text-teal cursor-pointer"></i>
+                    </div>
+                </div>
+                <div>
+                    <h6 class="font-bold uppercase text-xs tracking-widest text-navy mb-6">Product</h6>
+                    <ul class="space-y-4 text-gray-500">
+                        <li><a href="#" class="hover:text-teal">AI Trip Planner</a></li>
+                        <li><a href="#" class="hover:text-teal">City Guides</a></li>
+                        <li><a href="#" class="hover:text-teal">Budget Tracker</a></li>
+                        <li><a href="#" class="hover:text-teal">Pricing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h6 class="font-bold uppercase text-xs tracking-widest text-navy mb-6">Company</h6>
+                    <ul class="space-y-4 text-gray-500">
+                        <li><a href="#" class="hover:text-teal">About Us</a></li>
+                        <li><a href="#" class="hover:text-teal">Blog</a></li>
+                        <li><a href="#" class="hover:text-teal">Careers</a></li>
+                        <li><a href="#" class="hover:text-teal">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h6 class="font-bold uppercase text-xs tracking-widest text-navy mb-6">Legal</h6>
+                    <ul class="space-y-4 text-gray-500">
+                        <li><a href="#" class="hover:text-teal">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-teal">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-teal">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="max-w-7xl mx-auto border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-400 text-sm">
+                <p>&copy; 2024 WanderWise AI. All rights reserved.</p>
+                <div class="flex gap-6">
+                    <span>English (US)</span>
+                    <span>USD ($)</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- VIEW: AUTH SCREEN -->
+    <div id="auth-view" class="hidden-view min-h-screen hero-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden fade-in visible">
+            <!-- Auth Header -->
+            <div class="p-8 pb-4 text-center">
+                <div class="flex justify-center items-center gap-2 mb-2">
+                    <div class="bg-teal p-1.5 rounded-lg">
+                        <i data-lucide="compass" class="text-white w-6 h-6"></i>
+                    </div>
+                    <span class="text-2xl font-bold heading-font text-navy">WanderWise</span>
+                </div>
+                <p class="text-gray-500 text-sm">Your AI Travel Companion</p>
+            </div>
+
+            <!-- Auth Tabs -->
+            <div class="flex border-b border-gray-100">
+                <button id="tab-login" onclick="toggleAuthTab('login')" class="flex-1 py-4 font-bold text-teal border-b-2 border-teal transition-all">Sign In</button>
+                <button id="tab-signup" onclick="toggleAuthTab('signup')" class="flex-1 py-4 font-bold text-gray-400 border-b-2 border-transparent transition-all">Sign Up</button>
+            </div>
+
+            <div class="p-8">
+                <!-- Login Form -->
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-navy mb-1">Email Address</label>
+                        <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal focus:ring-2 focus:ring-teal/20 outline-none transition-all" placeholder="name@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-navy mb-1">Password</label>
+                        <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal focus:ring-2 focus:ring-teal/20 outline-none transition-all" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full bg-teal text-white py-4 rounded-xl font-bold hover:bg-teal-700 transition-all shadow-lg shadow-teal-500/20 active:scale-95">Sign In</button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" onsubmit="handleSignup(event)" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-navy mb-1">Full Name</label>
+                        <input type="text" id="signup-name" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal focus:ring-2 focus:ring-teal/20 outline-none transition-all" placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-navy mb-1">Email Address</label>
+                        <input type="email" id="signup-email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal focus:ring-2 focus:ring-teal/20 outline-none transition-all" placeholder="name@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-navy mb-1">Password</label>
+                        <input type="password" id="signup-password" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal focus:ring-2 focus:ring-teal/20 outline-none transition-all" placeholder="••••••••">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-navy mb-1">Confirm Password</label>
+                        <input type="password" id="signup-confirm" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-teal focus:ring-2 focus:ring-teal/20 outline-none transition-all" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full bg-teal text-white py-4 rounded-xl font-bold hover:bg-teal-700 transition-all shadow-lg shadow-teal-500/20 active:scale-95">Create Account</button>
+                </form>
+
+                <div class="mt-6 flex items-center gap-4">
+                    <div class="flex-grow h-px bg-gray-100"></div>
+                    <span class="text-gray-400 text-sm uppercase tracking-widest font-bold">or</span>
+                    <div class="flex-grow h-px bg-gray-100"></div>
+                </div>
+
+                <button onclick="continueAsGuest()" class="w-full mt-6 py-4 rounded-xl font-bold text-navy bg-gray-100 hover:bg-gray-200 transition-all active:scale-95">Continue as Guest</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW: ONBOARDING WIZARD -->
+    <div id="onboarding-view" class="hidden-view min-h-screen bg-gray-50 p-4 md:p-8">
+        <div class="max-w-3xl mx-auto">
+            <!-- Progress Header -->
+            <div class="mb-12">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold heading-font text-navy">Setting up your profile</h2>
+                    <span id="step-counter" class="text-teal font-bold">Step 1 of 4</span>
+                </div>
+                <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="progress-bar-fill h-full bg-teal w-1/4"></div>
+                </div>
+            </div>
+
+            <!-- Wizard Card -->
+            <div class="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-8">
+                
+                <!-- Step 1: Basics -->
+                <div id="ob-step-1" class="wizard-step space-y-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-3xl font-bold heading-font text-navy mb-2">The Basics</h3>
+                        <p class="text-gray-500">Tell us a bit about yourself to get started.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-sm font-bold text-navy mb-2">My Full Name</label>
+                            <input type="text" id="ob-name" class="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-teal focus:ring-4 focus:ring-teal/5 transition-all outline-none" placeholder="Alex Wanderer">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-navy mb-2">Date of Birth</label>
+                            <input type="date" id="ob-dob" class="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-teal transition-all outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-navy mb-2">Home City</label>
+                            <div class="relative">
+                                <input type="text" id="ob-city" list="city-suggestions" class="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-teal transition-all outline-none" placeholder="Search major cities...">
+                                <datalist id="city-suggestions">
+                                    <option value="Mumbai">
+                                    <option value="Delhi">
+                                    <option value="Bengaluru">
+                                    <option value="New York">
+                                    <option value="London">
+                                    <option value="Paris">
+                                    <option value="Tokyo">
+                                    <option value="Sydney">
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-sm font-bold text-navy mb-3">Preferred Currency</label>
+                            <div class="flex bg-gray-100 p-1 rounded-2xl">
+                                <button onclick="setCurrency('INR')" id="cur-INR" class="flex-1 py-3 font-bold rounded-xl transition-all">INR (₹)</button>
+                                <button onclick="setCurrency('USD')" id="cur-USD" class="flex-1 py-3 font-bold rounded-xl transition-all">USD ($)</button>
+                                <button onclick="setCurrency('EUR')" id="cur-EUR" class="flex-1 py-3 font-bold rounded-xl transition-all">EUR (€)</button>
+                                <button onclick="setCurrency('GBP')" id="cur-GBP" class="flex-1 py-3 font-bold rounded-xl transition-all">GBP (£)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Travel Style -->
+                <div id="ob-step-2" class="wizard-step hidden space-y-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-3xl font-bold heading-font text-navy mb-2">Your Travel Style</h3>
+                        <p class="text-gray-500">How do you usually like to explore?</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div onclick="selectTravelStyle('Adventure')" class="select-card travel-style-card p-6 rounded-2xl bg-gray-50 text-center" data-style="Adventure">
+                            <div class="text-4xl mb-3">🧗</div>
+                            <h4 class="font-bold text-navy">Adventure</h4>
+                            <p class="text-xs text-gray-500 mt-1">Thrills and outdoor activities</p>
+                        </div>
+                        <div onclick="selectTravelStyle('Relaxation')" class="select-card travel-style-card p-6 rounded-2xl bg-gray-50 text-center" data-style="Relaxation">
+                            <div class="text-4xl mb-3">🏖️</div>
+                            <h4 class="font-bold text-navy">Relaxation</h4>
+                            <p class="text-xs text-gray-500 mt-1">Spas, beaches and calm vibes</p>
+                        </div>
+                        <div onclick="selectTravelStyle('Cultural')" class="select-card travel-style-card p-6 rounded-2xl bg-gray-50 text-center" data-style="Cultural">
+                            <div class="text-4xl mb-3">🏛️</div>
+                            <h4 class="font-bold text-navy">Cultural</h4>
+                            <p class="text-xs text-gray-500 mt-1">Museums, history and art</p>
+                        </div>
+                        <div onclick="selectTravelStyle('Foodie')" class="select-card travel-style-card p-6 rounded-2xl bg-gray-50 text-center" data-style="Foodie">
+                            <div class="text-4xl mb-3">🍜</div>
+                            <h4 class="font-bold text-navy">Foodie</h4>
+                            <p class="text-xs text-gray-500 mt-1">Street food and fine dining</p>
+                        </div>
+                        <div onclick="selectTravelStyle('Backpacker')" class="select-card travel-style-card p-6 rounded-2xl bg-gray-50 text-center" data-style="Backpacker">
+                            <div class="text-4xl mb-3">🎒</div>
+                            <h4 class="font-bold text-navy">Backpacker</h4>
+                            <p class="text-xs text-gray-500 mt-1">Budget-friendly and social</p>
+                        </div>
+                        <div onclick="selectTravelStyle('Luxury')" class="select-card travel-style-card p-6 rounded-2xl bg-gray-50 text-center" data-style="Luxury">
+                            <div class="text-4xl mb-3">💎</div>
+                            <h4 class="font-bold text-navy">Luxury</h4>
+                            <p class="text-xs text-gray-500 mt-1">First class and 5-star stays</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <label class="block text-sm font-bold text-navy mb-3">Preferred Trip Duration</label>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="setTripDuration('Weekend')" class="duration-chip px-6 py-3 rounded-full border border-gray-200 font-medium hover:border-teal transition-all">Weekend</button>
+                            <button onclick="setTripDuration('1 week')" class="duration-chip px-6 py-3 rounded-full border border-gray-200 font-medium hover:border-teal transition-all">1 week</button>
+                            <button onclick="setTripDuration('2 weeks')" class="duration-chip px-6 py-3 rounded-full border border-gray-200 font-medium hover:border-teal transition-all">2 weeks</button>
+                            <button onclick="setTripDuration('1 month+')" class="duration-chip px-6 py-3 rounded-full border border-gray-200 font-medium hover:border-teal transition-all">1 month+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Budget & Stay -->
+                <div id="ob-step-3" class="wizard-step hidden space-y-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-3xl font-bold heading-font text-navy mb-2">Budget & Stay</h3>
+                        <p class="text-gray-500">Help us tailor the costs for you.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div onclick="selectBudget('Budget')" class="select-card budget-card p-8 rounded-2xl bg-gray-50" data-budget="Budget">
+                            <h4 class="text-xl font-bold text-navy mb-2">Budget</h4>
+                            <p class="text-sm text-gray-500">Economy stays and cheap eats.</p>
+                            <div class="mt-4 font-bold text-teal" id="hint-budget">~ <span class="val">2,000</span> / day</div>
+                        </div>
+                        <div onclick="selectBudget('Mid-range')" class="select-card budget-card p-8 rounded-2xl bg-gray-50" data-budget="Mid-range">
+                            <h4 class="text-xl font-bold text-navy mb-2">Mid-range</h4>
+                            <p class="text-sm text-gray-500">Comfortable hotels and bistros.</p>
+                            <div class="mt-4 font-bold text-teal" id="hint-mid">~ <span class="val">6,000</span> / day</div>
+                        </div>
+                        <div onclick="selectBudget('Luxury')" class="select-card budget-card p-8 rounded-2xl bg-gray-50" data-budget="Luxury">
+                            <h4 class="text-xl font-bold text-navy mb-2">Luxury</h4>
+                            <p class="text-sm text-gray-500">Upscale resorts and fine dining.</p>
+                            <div class="mt-4 font-bold text-teal" id="hint-lux">~ <span class="val">15,000</span> / day</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <label class="block text-sm font-bold text-navy mb-3">Accommodation Preferences</label>
+                            <div class="flex flex-wrap gap-2">
+                                <span onclick="toggleChip(this, 'accommodation')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium bg-white">Hostel</span>
+                                <span onclick="toggleChip(this, 'accommodation')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium bg-white">Hotel</span>
+                                <span onclick="toggleChip(this, 'accommodation')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium bg-white">Airbnb</span>
+                                <span onclick="toggleChip(this, 'accommodation')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium bg-white">Resort</span>
+                                <span onclick="toggleChip(this, 'accommodation')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium bg-white">Homestay</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-navy mb-3">Travel Companions</label>
+                            <div class="flex p-1 bg-gray-100 rounded-2xl">
+                                <button onclick="setCompanions('Solo')" class="comp-btn flex-1 py-3 font-bold rounded-xl transition-all">Solo</button>
+                                <button onclick="setCompanions('Couple')" class="comp-btn flex-1 py-3 font-bold rounded-xl transition-all">Couple</button>
+                                <button onclick="setCompanions('Family')" class="comp-btn flex-1 py-3 font-bold rounded-xl transition-all">Family</button>
+                                <button onclick="setCompanions('Friends')" class="comp-btn flex-1 py-3 font-bold rounded-xl transition-all">Friends</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Preferences & Restrictions -->
+                <div id="ob-step-4" class="wizard-step hidden space-y-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-3xl font-bold heading-font text-navy mb-2">Final Details</h3>
+                        <p class="text-gray-500">Just a few more things to perfect your experience.</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold text-navy mb-3">Food Preferences</label>
+                            <div class="flex flex-wrap gap-2">
+                                <span onclick="toggleChip(this, 'foodPrefs')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">No Preference</span>
+                                <span onclick="toggleChip(this, 'foodPrefs')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Vegetarian</span>
+                                <span onclick="toggleChip(this, 'foodPrefs')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Vegan</span>
+                                <span onclick="toggleChip(this, 'foodPrefs')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Halal</span>
+                                <span onclick="toggleChip(this, 'foodPrefs')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Kosher</span>
+                                <span onclick="toggleChip(this, 'foodPrefs')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Gluten-Free</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-navy mb-3">Interests</label>
+                            <div class="flex flex-wrap gap-2">
+                                <span onclick="toggleChip(this, 'interests')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Beaches</span>
+                                <span onclick="toggleChip(this, 'interests')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Mountains</span>
+                                <span onclick="toggleChip(this, 'interests')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">History</span>
+                                <span onclick="toggleChip(this, 'interests')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Nightlife</span>
+                                <span onclick="toggleChip(this, 'interests')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Food</span>
+                                <span onclick="toggleChip(this, 'interests')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Shopping</span>
+                                <span onclick="toggleChip(this, 'interests')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Wildlife</span>
+                                <span onclick="toggleChip(this, 'interests')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Adventure Sports</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-navy mb-3">Languages Spoken</label>
+                            <div class="flex flex-wrap gap-2">
+                                <span onclick="toggleChip(this, 'languages')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">English</span>
+                                <span onclick="toggleChip(this, 'languages')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Hindi</span>
+                                <span onclick="toggleChip(this, 'languages')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">Spanish</span>
+                                <span onclick="toggleChip(this, 'languages')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">French</span>
+                                <span onclick="toggleChip(this, 'languages')" class="chip px-4 py-2 rounded-full border border-gray-200 text-sm font-medium">German</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-navy mb-3">Mobility Level</label>
+                            <input type="range" id="mobility-slider" min="1" max="3" value="2" class="w-full accent-teal h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex justify-between text-xs text-gray-500 mt-2 font-bold uppercase tracking-wider">
+                                <span>Low</span>
+                                <span>Moderate</span>
+                                <span>High</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Summary (Hidden until step 4 finish) -->
+                <div id="ob-summary" class="wizard-step hidden space-y-8">
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i data-lucide="check-circle" class="w-10 h-10 text-teal"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold heading-font text-navy mb-2">You're All Set!</h3>
+                        <p class="text-gray-500">Here's your travel profile summary.</p>
+                    </div>
+
+                    <div class="p-8 bg-gray-50 rounded-3xl space-y-4">
+                        <div class="flex justify-between border-b border-gray-200 pb-3">
+                            <span class="text-gray-500 font-medium">Persona</span>
+                            <span id="sum-persona" class="text-navy font-bold">--</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-200 pb-3">
+                            <span class="text-gray-500 font-medium">Est. Daily Budget</span>
+                            <span id="sum-budget" class="text-teal font-bold">--</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-200 pb-3">
+                            <span class="text-gray-500 font-medium">Travel Style</span>
+                            <span id="sum-style" class="text-navy font-bold">--</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500 font-medium">Compantions</span>
+                            <span id="sum-companions" class="text-navy font-bold">--</span>
+                        </div>
+                    </div>
+
+                    <button onclick="finishOnboarding()" class="w-full py-5 bg-teal text-white rounded-2xl font-bold text-xl hover:bg-teal-700 transition-all shadow-xl shadow-teal-500/20 active:scale-95">Start Exploring</button>
+                </div>
+            </div>
+
+            <!-- Wizard Navigation -->
+            <div id="wizard-nav" class="flex justify-between items-center px-4">
+                <button onclick="prevStep()" id="btn-prev" class="invisible py-4 px-8 font-bold text-gray-500 hover:text-navy transition-all">Back</button>
+                <button onclick="nextStep()" id="btn-next" class="py-4 px-10 bg-navy text-white rounded-2xl font-bold hover:bg-navy-900 transition-all active:scale-95">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 2: APP SHELL -->
+    <div id="app-view" class="hidden-view min-h-screen flex flex-col md:flex-row">
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 h-screen sticky top-0 p-6">
+            <div class="flex items-center gap-2 mb-10 px-2 cursor-pointer" onclick="switchToLanding()">
+                <div class="bg-teal p-1.5 rounded-md">
+                    <i data-lucide="compass" class="text-white w-5 h-5"></i>
+                </div>
+                <span class="text-xl font-bold heading-font text-navy">WanderWise</span>
+            </div>
+
+            <nav class="flex-grow space-y-2">
+                <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-gray-100" id="btn-dashboard">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span class="font-medium">Dashboard</span>
+                </button>
+                <button onclick="switchTab('trips')" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-gray-100" id="btn-trips">
+                    <i data-lucide="briefcase" class="w-5 h-5"></i>
+                    <span class="font-medium">My Trips</span>
+                </button>
+                <button onclick="switchTab('explore')" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-gray-100" id="btn-explore">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                    <span class="font-medium">Explore</span>
+                </button>
+                <button onclick="switchTab('concierge')" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-gray-100" id="btn-concierge">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    <span class="font-medium">AI Concierge</span>
+                </button>
+            </nav>
+
+            <div class="pt-6 border-t border-gray-100">
+                <button onclick="switchTab('profile')" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all hover:bg-gray-100" id="btn-profile">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                    <span class="font-medium">Profile</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-grow bg-gray-50 min-h-screen p-4 md:p-10 pb-24 md:pb-10 overflow-y-auto">
+            
+            <!-- Dashboard Tab -->
+            <div id="tab-dashboard" class="tab-content max-w-5xl mx-auto">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 id="welcome-message" class="text-3xl font-bold text-navy heading-font leading-none">Welcome back, Traveler!</h1>
+                    <button class="bg-teal text-white p-3 rounded-full shadow-lg h-12 w-12 flex items-center justify-center">
+                        <i data-lucide="plus" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2 aspect-[21/9] rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center bg-white">
+                        <span class="text-gray-400 font-medium">Upcoming Trip Card</span>
+                    </div>
+                    <div class="aspect-square rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center bg-white p-6 text-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-gray-400 font-medium mb-4">Budget Snapshot</span>
+                            <div id="budget-ring-preview" class="w-24 h-24 rounded-full border-8 border-teal/20 border-t-teal"></div>
+                            <span id="budget-amount-preview" class="text-navy font-bold mt-2 text-lg">--</span>
+                        </div>
+                    </div>
+                    <div class="aspect-square rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center bg-white p-6 text-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-gray-400 font-medium mb-4">Travel Persona</span>
+                            <div id="persona-icon-preview" class="text-4xl mb-2">🏷️</div>
+                            <span id="persona-name-preview" class="text-navy font-bold">--</span>
+                        </div>
+                    </div>
+                    <div class="aspect-square md:col-span-2 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center bg-white">
+                        <span class="text-gray-400 font-medium">Visited Places Map</span>
+                    </div>
+                    <div class="md:col-span-3 h-24 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center bg-white">
+                        <span class="text-gray-400 font-medium">Quick Actions</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trips Tab -->
+            <div id="tab-trips" class="tab-content hidden max-w-6xl mx-auto pb-10">
+                <!-- Trip Status Banner (Dynamic) -->
+                <div id="active-trip-banner" class="hidden mb-6 bg-teal/10 border border-teal/20 p-4 rounded-2xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-teal rounded-full flex items-center justify-center text-white">
+                            <i data-lucide="plane" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <p class="text-teal font-bold text-sm">Trip in Progress</p>
+                            <h4 id="active-trip-banner-title" class="text-navy font-bold">Exploring Bali...</h4>
+                        </div>
+                    </div>
+                    <button onclick="resumeActiveTrip()" class="bg-teal text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-teal-700 transition-all">Resume</button>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                    <div>
+                        <h1 class="text-3xl font-bold text-navy heading-font leading-tight">Your Adventures</h1>
+                        <p class="text-gray-500">Pick a destination or explore your history.</p>
+                    </div>
+                </div>
+
+                <!-- Featured Suggestion -->
+                <div id="ai-suggestion-container" class="mb-10"></div>
+
+                <!-- Filters -->
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                    <h2 class="text-xl font-bold text-navy heading-font flex items-center gap-2">
+                         <i data-lucide="library" class="w-5 h-5 text-teal"></i>
+                         Destinations
+                    </h2>
+                    <div class="flex bg-gray-100 p-1 rounded-xl overflow-x-auto max-w-full no-scrollbar">
+                        <button onclick="filterDestinations('All')" class="filter-chip px-4 py-1.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap bg-white text-teal shadow-sm" data-cat="All">All</button>
+                        <button onclick="filterDestinations('Beach')" class="filter-chip px-4 py-1.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap text-gray-500" data-cat="Beach">Beach</button>
+                        <button onclick="filterDestinations('Mountain')" class="filter-chip px-4 py-1.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap text-gray-500" data-cat="Mountain">Mountain</button>
+                        <button onclick="filterDestinations('City')" class="filter-chip px-4 py-1.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap text-gray-500" data-cat="City">City</button>
+                        <button onclick="filterDestinations('Cultural')" class="filter-chip px-4 py-1.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap text-gray-500" data-cat="Cultural">Cultural</button>
+                    </div>
+                </div>
+
+                <!-- Destination Grid -->
+                <div id="destination-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"></div>
+
+                <!-- History Section -->
+                <div class="pt-10 border-t border-gray-200">
+                    <h2 class="text-2xl font-bold text-navy heading-font mb-6">Travel Stats & History</h2>
+                    
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                            <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Total Trips</p>
+                            <p id="stat-trips" class="text-2xl font-bold text-navy">0</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                            <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Travel Days</p>
+                            <p id="stat-days" class="text-2xl font-bold text-teal">0</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                            <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Total Spend</p>
+                            <p id="stat-spend" class="text-2xl font-bold text-coral">--</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                            <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Streak</p>
+                            <p id="stat-streak" class="text-2xl font-bold text-navy">0</p>
+                        </div>
+                    </div>
+
+                    <div id="trip-history-list" class="space-y-4"></div>
+                </div>
+            </div>
+
+
+            <!-- Explore Tab -->
+            <div id="tab-explore" class="tab-content hidden max-w-6xl mx-auto pb-20">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Left Column: Budget & Stats -->
+                    <div class="lg:w-1/3 space-y-6">
+                        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 text-center">
+                            <h2 class="text-xl font-bold text-navy mb-6">Daily Budget Tracker</h2>
+                            
+                            <!-- SVG Progress Ring -->
+                            <div class="relative w-48 h-48 mx-auto mb-6">
+                                <svg class="w-full h-full transform -rotate-90">
+                                    <circle cx="96" cy="96" r="85" fill="transparent" stroke="#F1F5F9" stroke-width="12"></circle>
+                                    <circle id="budget-ring-svg" cx="96" cy="96" r="85" fill="transparent" stroke="#14B8A6" stroke-width="12" stroke-dasharray="534.07" stroke-dashoffset="534.07" stroke-linecap="round" class="transition-all duration-1000"></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <p id="explore-budget-text" class="text-2xl font-black text-navy">$0 / $100</p>
+                                    <p id="explore-currency-text" class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">USD</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4 mb-6">
+                                <p id="remaining-text" class="text-sm font-bold text-teal">Remaining today: $100</p>
+                                <button onclick="toggleWeeklyView()" class="text-xs font-bold text-gray-400 hover:text-navy transition-all flex items-center justify-center gap-1 mx-auto">
+                                    <i data-lucide="bar-chart-2" class="w-3 h-3"></i>
+                                    Weekly View
+                                </button>
+                            </div>
+
+                            <!-- Category Bars -->
+                            <div id="category-bars" class="space-y-3 text-left">
+                                <!-- Dynamic Bars -->
+                            </div>
+                        </div>
+
+                        <!-- Quick Facts Panel -->
+                        <div class="bg-navy text-white rounded-3xl shadow-xl overflow-hidden">
+                            <div class="flex border-b border-white/10">
+                                <button onclick="switchQuickTab('weather')" class="q-tab flex-1 py-3 text-[10px] font-bold uppercase tracking-tighter opacity-100 border-b-2 border-teal" data-qtab="weather">Weather</button>
+                                <button onclick="switchQuickTab('time')" class="q-tab flex-1 py-3 text-[10px] font-bold uppercase tracking-tighter opacity-40" data-qtab="time">Time</button>
+                                <button onclick="switchQuickTab('cash')" class="q-tab flex-1 py-3 text-[10px] font-bold uppercase tracking-tighter opacity-40" data-qtab="cash">Cash</button>
+                                <button onclick="switchQuickTab('talk')" class="q-tab flex-1 py-3 text-[10px] font-bold uppercase tracking-tighter opacity-40" data-qtab="talk">Talk</button>
+                                <button onclick="switchQuickTab('sos')" class="q-tab flex-1 py-3 text-[10px] font-bold uppercase tracking-tighter opacity-40" data-qtab="sos">SOS</button>
+                            </div>
+                            <div id="quick-facts-content" class="p-6 min-h-[160px]">
+                                <!-- Dynamic Content -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Itinerary -->
+                    <div class="lg:w-2/3 space-y-6">
+                        <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                             <div class="flex items-center gap-4">
+                                <button onclick="changeExploreDate(-1)" class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-100"><i data-lucide="chevron-left"></i></button>
+                                <div class="text-center">
+                                    <h3 id="explore-display-date" class="font-bold text-navy">Today</h3>
+                                    <p class="text-[10px] text-gray-400 font-bold uppercase">Itinerary</p>
+                                </div>
+                                <button onclick="changeExploreDate(1)" class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-100"><i data-lucide="chevron-right"></i></button>
+                             </div>
+                             <div class="flex gap-2">
+                                <button onclick="openAddModal('morning')" class="bg-teal text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-teal-700 transition-all">+ Plan</button>
+                             </div>
+                        </div>
+
+                        <!-- Slots -->
+                        <div class="space-y-4">
+                            <div id="slot-morning" class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="font-bold text-navy flex items-center gap-2">🌅 Morning <span class="slot-total text-xs text-gray-400 font-medium ml-2"></span></h4>
+                                </div>
+                                <div class="slot-items space-y-3"></div>
+                                <button onclick="openAddModal('morning')" class="w-full mt-4 py-3 border-2 border-dashed border-gray-100 rounded-2xl text-gray-400 text-sm font-bold hover:border-teal/30 hover:text-teal transition-all">+ Add Place / Event</button>
+                            </div>
+                            <div id="slot-afternoon" class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="font-bold text-navy flex items-center gap-2">☀️ Afternoon <span class="slot-total text-xs text-gray-400 font-medium ml-2"></span></h4>
+                                </div>
+                                <div class="slot-items space-y-3"></div>
+                                <button onclick="openAddModal('afternoon')" class="w-full mt-4 py-3 border-2 border-dashed border-gray-100 rounded-2xl text-gray-400 text-sm font-bold hover:border-teal/30 hover:text-teal transition-all">+ Add Place / Event</button>
+                            </div>
+                            <div id="slot-evening" class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="font-bold text-navy flex items-center gap-2">🌇 Evening <span class="slot-total text-xs text-gray-400 font-medium ml-2"></span></h4>
+                                </div>
+                                <div class="slot-items space-y-3"></div>
+                                <button onclick="openAddModal('evening')" class="w-full mt-4 py-3 border-2 border-dashed border-gray-100 rounded-2xl text-gray-400 text-sm font-bold hover:border-teal/30 hover:text-teal transition-all">+ Add Place / Event</button>
+                            </div>
+                            <div id="slot-night" class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="font-bold text-navy flex items-center gap-2">🌙 Night <span class="slot-total text-xs text-gray-400 font-medium ml-2"></span></h4>
+                                </div>
+                                <div class="slot-items space-y-3"></div>
+                                <button onclick="openAddModal('night')" class="w-full mt-4 py-3 border-2 border-dashed border-gray-100 rounded-2xl text-gray-400 text-sm font-bold hover:border-teal/30 hover:text-teal transition-all">+ Add Place / Event</button>
+                            </div>
+                        </div>
+
+                        <!-- Recent/Favorites -->
+                        <div class="pt-8 border-t border-gray-100">
+                            <h3 class="text-xl font-bold text-navy mb-6 flex items-center gap-2">
+                                <i data-lucide="clock" class="w-5 h-5 text-teal"></i>
+                                Recent Places
+                            </h3>
+                            <div id="recent-places-list" class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
+                                <!-- Dynamic Recent -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODALS / OVERLAYS -->
+            
+            <!-- Add Place Modal -->
+            <div id="modal-add-place" class="hidden fixed inset-0 z-[100] bg-navy/80 backdrop-blur-md flex items-center justify-center p-4">
+                <div class="bg-white w-full max-w-3xl h-[85vh] rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
+                    <div class="p-6 bg-teal text-white flex justify-between items-center shrink-0">
+                        <div>
+                            <h3 id="add-modal-title" class="text-xl font-bold">Add to Morning</h3>
+                            <p class="text-xs opacity-70">Find restaurants, attractions, or events</p>
+                        </div>
+                        <button onclick="closeAddModal()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30"><i data-lucide="x"></i></button>
+                    </div>
+
+                    <div class="p-6 space-y-4 shrink-0 border-b border-gray-100 bg-gray-50/50">
+                        <div class="flex bg-white rounded-2xl p-2 border border-gray-100 shadow-sm">
+                            <i data-lucide="search" class="w-5 h-5 text-gray-300 ml-2 mt-2"></i>
+                            <input oninput="searchPlaces(this.value)" type="text" placeholder="Search by name, city or category..." class="w-full px-3 py-2 bg-transparent border-none focus:outline-none text-navy font-medium">
+                        </div>
+                        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                            <button onclick="filterAddModal('All')" class="add-filter text-xs font-bold px-4 py-2 rounded-xl border border-gray-100 bg-white text-navy active:bg-teal active:text-white" data-cat="All">All</button>
+                            <button onclick="filterAddModal('Restaurants')" class="add-filter text-xs font-bold px-4 py-2 rounded-xl border border-gray-100 bg-white text-navy" data-cat="Restaurants">Restaurants</button>
+                            <button onclick="filterAddModal('Attractions')" class="add-filter text-xs font-bold px-4 py-2 rounded-xl border border-gray-100 bg-white text-navy" data-cat="Attractions">Attractions</button>
+                            <button onclick="filterAddModal('Events')" class="add-filter text-xs font-bold px-4 py-2 rounded-xl border border-gray-100 bg-white text-navy" data-cat="Events">Events</button>
+                            <button onclick="filterAddModal('Activities')" class="add-filter text-xs font-bold px-4 py-2 rounded-xl border border-gray-100 bg-white text-navy" data-cat="Activities">Activities</button>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow flex overflow-hidden">
+                        <!-- Search Results -->
+                        <div id="add-modal-results" class="flex-grow overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Dynamic Results -->
+                        </div>
+
+                        <!-- Details Sidebar (Hidden on mobile by default) -->
+                        <div id="add-modal-details" class="hidden absolute md:static inset-0 md:inset-auto w-full md:w-80 bg-white border-l border-gray-100 p-8 flex flex-col items-center text-center animate-in slide-in-from-right duration-300 z-10">
+                            <button onclick="hideAddDetails()" class="md:hidden absolute top-4 right-4 text-gray-400"><i data-lucide="x"></i></button>
+                            <div id="detail-emoji" class="text-6xl mb-6">📍</div>
+                            <h4 id="detail-name" class="text-2xl font-bold text-navy mb-2">Place Name</h4>
+                            <p id="detail-loc" class="text-xs text-gray-400 mb-6 uppercase font-bold tracking-widest">Mumbai, India</p>
+                            
+                            <div class="bg-gray-50 rounded-2xl p-4 w-full mb-6">
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Adjust Estimated Cost ($)</label>
+                                <input id="detail-cost-edit" type="number" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-center font-bold text-navy focus:ring-2 focus:ring-teal/20">
+                            </div>
+
+                            <p id="detail-desc" class="text-xs text-gray-500 leading-relaxed mb-8">Detailed description of the place goes here...</p>
+                            
+                            <div class="flex gap-4 w-full mt-auto">
+                                <button id="detail-fav-btn" onclick="toggleFavoriteCurrent()" class="p-4 bg-gray-100 text-gray-400 rounded-2xl hover:bg-red-50 hover:text-red-500 transition-all">
+                                    <i data-lucide="heart" class="w-6 h-6"></i>
+                                </button>
+                                <button id="detail-add-btn" class="flex-1 bg-teal text-white py-4 rounded-2xl font-bold shadow-lg shadow-teal-500/20">Add to Slot</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 border-t border-gray-100 bg-white text-center shrink-0">
+                        <p class="text-xs text-gray-400">Can't find your place? <button onclick="openCustomPlace()" class="text-teal font-bold hover:underline">Add custom</button></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Place Modal -->
+            <div id="modal-custom-place" class="hidden fixed inset-0 z-[110] bg-navy/90 backdrop-blur-md flex items-center justify-center p-4">
+                <div class="bg-white w-full max-w-md rounded-3xl p-8 space-y-6">
+                    <h3 class="text-2xl font-bold text-navy">Add Custom Item</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Item Name</label>
+                            <input id="custom-name" type="text" class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal/20 text-navy font-bold">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Category</label>
+                                <select id="custom-cat" class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-navy font-bold">
+                                    <option>Restaurants</option>
+                                    <option>Attractions</option>
+                                    <option>Activities</option>
+                                    <option>Shopping</option>
+                                    <option>Transport</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Cost (USD)</label>
+                                <input id="custom-cost" type="number" class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-navy font-bold">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <button onclick="closeOverlay('modal-custom-place')" class="flex-1 py-4 bg-gray-100 text-gray-500 rounded-2xl font-bold">Cancel</button>
+                        <button onclick="saveCustomPlace()" class="flex-1 py-4 bg-teal text-white rounded-2xl font-bold shadow-lg shadow-teal-500/20">Add to Slot</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly View Modal -->
+            <div id="modal-weekly" class="hidden fixed inset-0 z-[120] bg-navy/80 backdrop-blur-md flex items-center justify-center p-4">
+                <div class="bg-white w-full max-w-2xl rounded-3xl p-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="text-2xl font-bold text-navy">Weekly Budget Summary</h3>
+                        <button onclick="closeOverlay('modal-weekly')" class="text-gray-400 hover:text-navy"><i data-lucide="x"></i></button>
+                    </div>
+                    <div id="weekly-chart" class="h-64 flex items-end gap-3 mb-6">
+                        <!-- Dynamic Chart Bars -->
+                    </div>
+                    <div class="flex justify-between text-[10px] font-bold text-gray-400 uppercase px-2 mb-8">
+                        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                    </div>
+                    <button onclick="closeOverlay('modal-weekly')" class="w-full py-4 bg-navy text-white rounded-2xl font-bold">Close</button>
+                </div>
+            </div>
+
+            <!-- AI Concierge Tab -->
+            <div id="tab-concierge" class="tab-content hidden h-full max-w-5xl mx-auto flex flex-col">
+                <h1 class="text-3xl font-bold text-navy heading-font mb-8">Chat with Globi</h1>
+                <div class="flex-grow rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center bg-white p-10 text-center">
+                    <div class="w-24 h-24 bg-teal/10 rounded-full flex items-center justify-center mb-6">
+                        <i data-lucide="bot" class="w-12 h-12 text-teal"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-navy mb-2">Globi Chat Coming Soon</h2>
+                    <p class="text-gray-500 max-w-sm">Your real-time AI travel assistant is getting its final training. Stay tuned for expert advice in your pocket.</p>
+                </div>
+            <!-- Profile Tab -->
+            <div id="tab-profile" class="tab-content hidden max-w-2xl mx-auto">
+                <h1 class="text-3xl font-bold text-navy heading-font mb-8">Your Account</h1>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex flex-col items-center text-center">
+                    <div class="w-24 h-24 md:w-32 md:h-32 bg-coral rounded-full flex items-center justify-center text-white text-4xl font-bold mb-6 overflow-hidden">
+                        <img id="profile-avatar" src="https://ui-avatars.com/api/?name=User&background=FF8E72&color=fff&size=200" alt="Avatar" class="w-full h-full object-cover">
+                    </div>
+                    <h2 id="profile-name" class="text-2xl font-bold text-navy">User Name</h2>
+                    <p id="profile-email" class="text-gray-500 mb-4">user@example.com</p>
+                    <div id="profile-persona" class="bg-teal/10 text-teal px-4 py-1 rounded-full text-sm font-bold uppercase mb-8 text-center min-h-[1.5rem]">--</div>
+                    
+                    <div class="w-full space-y-4">
+                        <div class="h-12 w-full rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center">
+                            <span class="text-gray-400 text-sm">Account Settings Placeholder</span>
+                        </div>
+                        <button onclick="handleLogout()" class="w-full py-4 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all">Log Out</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- MODALS / OVERLAYS -->
+            
+            <!-- Destination Detail Overlay -->
+            <div id="overlay-destination" class="hidden fixed inset-0 z-[60] bg-navy/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
+                <div class="bg-white w-full max-w-2xl max-h-[90vh] rounded-t-3xl md:rounded-3xl overflow-hidden flex flex-col relative">
+                    <button onclick="closeOverlay('overlay-destination')" class="absolute top-4 right-4 z-20 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/40 transition-all">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                    <!-- Hero Banner -->
+                    <div id="dest-detail-hero" class="h-48 md:h-64 flex items-center justify-center relative bg-gradient-to-br from-teal to-navy text-white">
+                        <span id="dest-detail-emoji" class="text-7xl md:text-9xl">🏔️</span>
+                    </div>
+                    <div class="p-6 md:p-10 overflow-y-auto flex-grow bg-white">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 id="dest-detail-name" class="text-3xl font-bold text-navy heading-font">Destination Name</h3>
+                                <p id="dest-detail-country" class="text-gray-500 font-medium">Country, Region</p>
+                            </div>
+                            <span id="dest-detail-cat" class="bg-teal/10 text-teal px-3 py-1 rounded-full text-xs font-bold uppercase">CATEGORY</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                            <div class="p-3 bg-gray-50 rounded-xl">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">Best Season</p>
+                                <p id="dest-detail-season" class="text-xs font-bold text-navy">Oct - Mar</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded-xl">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">Avg Budget</p>
+                                <p id="dest-detail-budget" class="text-xs font-bold text-navy">$100/day</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded-xl">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">Transport</p>
+                                <p id="dest-detail-transport" class="text-xs font-bold text-navy">Metro</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded-xl">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">Language</p>
+                                <p id="dest-detail-lang" class="text-xs font-bold text-navy">English</p>
+                            </div>
+                        </div>
+
+                        <div id="dest-detail-vibe" class="flex flex-wrap gap-2 mb-8"></div>
+
+                        <div class="mb-8">
+                            <h4 class="font-bold text-navy mb-4 border-b border-gray-100 pb-2">Top 5 Attractions</h4>
+                            <div id="dest-detail-sights" class="space-y-3"></div>
+                        </div>
+
+                        <div class="bg-teal/5 p-6 rounded-2xl border border-teal/10">
+                            <h4 class="font-bold text-teal flex items-center gap-2 mb-2">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                                Why You'd Love It
+                            </h4>
+                            <p id="dest-detail-why" class="text-gray-600 text-sm italic leading-relaxed">Explanation based on persona...</p>
+                        </div>
+                    </div>
+                    <div class="p-6 border-t border-gray-100 flex gap-4 bg-white">
+                        <button onclick="handleWishlist()" id="dest-wishlist-btn" class="flex-1 py-4 border-2 border-gray-100 text-gray-500 rounded-xl font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="bookmark" class="w-5 h-5"></i>
+                            Wishlist
+                        </button>
+                        <button onclick="openPlanner()" class="flex-[2] py-4 bg-teal text-white rounded-xl font-bold shadow-lg shadow-teal-500/20 hover:bg-teal-700 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i>
+                            Generate Trip Plan
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Planning Overlay -->
+            <div id="overlay-planner" class="hidden fixed inset-0 z-[70] bg-navy/80 flex items-center justify-center p-0 md:p-4">
+                <div class="bg-white w-full max-w-3xl h-full md:h-[85vh] rounded-none md:rounded-3xl flex flex-col">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-teal text-white md:rounded-t-3xl">
+                        <div>
+                            <h3 id="plan-title" class="text-xl font-bold heading-font">Planning your Trip</h3>
+                            <p class="text-white/70 text-sm">AI Generated Itinerary</p>
+                        </div>
+                        <button onclick="closeOverlay('overlay-planner')" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all">
+                             <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    <div id="planner-content" class="flex-grow overflow-y-auto p-6 md:p-10 space-y-8 bg-gray-50"></div>
+                    <div class="p-6 border-t border-gray-100 bg-white md:rounded-b-3xl flex justify-between items-center">
+                        <button onclick="regenerateItinerary()" class="text-gray-500 font-bold hover:text-navy px-4">Regenerate</button>
+                        <button onclick="startActiveTrip()" class="bg-navy text-white px-8 py-4 rounded-xl font-bold shadow-xl hover:bg-black transition-all flex items-center gap-2">
+                            <i data-lucide="play" class="w-5 h-5 fill-current"></i>
+                            Start This Trip
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Trip Overlay -->
+            <div id="overlay-active-trip" class="hidden fixed inset-0 z-[80] bg-[#F8F9FA] flex flex-col">
+                <header class="bg-navy p-6 pt-12 md:pt-6 text-white flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <button onclick="saveAndCloseActive()" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">
+                            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                        </button>
+                        <div>
+                            <h3 id="active-dest-name" class="text-xl font-bold">Trip Title</h3>
+                            <div class="flex items-center gap-4 text-white/60 text-xs font-bold uppercase tracking-widest">
+                                <span id="active-day-count">Day 1 of 5</span>
+                                <span class="bg-white/10 px-2 py-0.5 rounded text-white flex items-center gap-1">
+                                    <i data-lucide="banknote" class="w-3 h-3"></i>
+                                    <span id="active-spent">$0</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="confirmEndTrip()" class="bg-coral/20 text-coral border border-coral/30 px-3 py-1.5 rounded-lg text-xs font-bold uppercase">End Trip</button>
+                </header>
+
+                <div class="p-2 bg-navy-900 border-t border-white/5 flex gap-2 overflow-x-auto no-scrollbar pb-4" id="active-days-strip"></div>
+
+                <div class="flex-grow overflow-y-auto p-6 space-y-6 max-w-3xl mx-auto w-full">
+                    <div id="active-slots-container" class="space-y-4"></div>
+                </div>
+
+                <footer class="p-6 bg-white border-t border-gray-100 flex gap-4 md:hidden">
+                    <button onclick="saveAndCloseActive()" class="flex-1 py-4 bg-gray-100 text-gray-700 rounded-xl font-bold">Minimize</button>
+                    <button onclick="nextActiveDay()" class="flex-1 py-4 bg-teal text-white rounded-xl font-bold">Next Day</button>
+                </footer>
+            </div>
+
+        <!-- Bottom Tab Bar (Mobile) -->
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 px-2 py-2 flex justify-around items-center z-50 overflow-x-hidden">
+            <button onclick="switchTab('dashboard')" class="flex flex-col items-center p-2 text-gray-400" id="btn-mobile-dashboard">
+                <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+                <span class="text-[10px] mt-1">Dash</span>
+            </button>
+            <button onclick="switchTab('trips')" class="flex flex-col items-center p-2 text-gray-400" id="btn-mobile-trips">
+                <i data-lucide="briefcase" class="w-6 h-6"></i>
+                <span class="text-[10px] mt-1">Trips</span>
+            </button>
+            <button onclick="switchTab('explore')" class="flex flex-col items-center p-2 text-gray-400" id="btn-mobile-explore">
+                <i data-lucide="search" class="w-6 h-6"></i>
+                <span class="text-[10px] mt-1">Explore</span>
+            </button>
+            <button onclick="switchTab('concierge')" class="flex flex-col items-center p-2 text-gray-400" id="btn-mobile-concierge">
+                <i data-lucide="sparkles" class="w-6 h-6"></i>
+                <span class="text-[10px] mt-1">AI</span>
+            </button>
+            <button onclick="switchTab('profile')" class="flex flex-col items-center p-2 text-gray-400" id="btn-mobile-profile">
+                <i data-lucide="user" class="w-6 h-6"></i>
+                <span class="text-[10px] mt-1">Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // --- DESTINATION DATA ---
+        const DESTINATIONS = [
+            { id: 'goa', name: 'Goa', country: '🇮🇳 India', category: 'Beach', bestSeason: 'Nov - Feb', avgDailyBudgetUSD: 50, vibeTags: ['Party', 'Chill', 'Sun'], transport: 'Scooter/Taxi', language: 'Konkani/Hindi', currency: 'INR', emoji: '🏖️', attractions: ['Baga Beach', 'Old Goa Churches', 'Dudhsagar Falls', 'Anjuna Flea Market', 'Fort Aguada'], desc: 'The party capital of India with beautiful beaches and Portuguese heritage.' },
+            { id: 'manali', name: 'Manali', country: '🇮🇳 India', category: 'Mountain', bestSeason: 'Apr - Jun', avgDailyBudgetUSD: 40, vibeTags: ['Snow', 'Adventure', 'Cozy'], transport: 'Local Bus/Taxi', language: 'Hindi', currency: 'INR', emoji: '🏔️', attractions: ['Solang Valley', 'Rohtang Pass', 'Hadimba Temple', 'Old Manali', 'Jogini Falls'], desc: 'A high-altitude Himalayan resort town known for its cool climate.' },
+            { id: 'jaipur', name: 'Jaipur', country: '🇮🇳 India', category: 'Cultural', bestSeason: 'Oct - Mar', avgDailyBudgetUSD: 45, vibeTags: ['Royal', 'Art', 'History'], transport: 'Rickshaw/Cab', language: 'Hindi/Rajasthani', currency: 'INR', emoji: '🏰', attractions: ['Amer Fort', 'Hawa Mahal', 'City Palace', 'Jantar Mantar', 'Nahargarh Fort'], desc: 'The Pink City of India, gateway to one of India’s most flamboyant states.' },
+            { id: 'kerala', name: 'Kerala', country: '🇮🇳 India', category: 'Nature', bestSeason: 'Sep - Mar', avgDailyBudgetUSD: 55, vibeTags: ['Lush', 'Serene', 'Backwaters'], transport: 'Houseboat/Bus', language: 'Malayalam', currency: 'INR', emoji: '🛶', attractions: ['Alleppey Backwaters', 'Munnar Tea Gardens', 'Wayanad', 'Kochi Fort', 'Varkala Beach'], desc: 'Known as "God\'s Own Country" for its scenic beauty and backwaters.' },
+            { id: 'ladakh', name: 'Ladakh', country: '🇮🇳 India', category: 'Mountain', bestSeason: 'Jun - Sep', avgDailyBudgetUSD: 60, vibeTags: ['Epic', 'Spiritual', 'Rugged'], transport: 'Bullet/Bike', language: 'Ladakhi/Hindi', currency: 'INR', emoji: '🏔️', attractions: ['Pangong Lake', 'Nubra Valley', 'Leh Palace', 'Khardung La Pass', 'Thiksey Monastery'], desc: 'A region in the Indian state of Jammu and Kashmir that currently extends from the Kunlun mountain range to the main Great Himalayas.' },
+            { id: 'bali', name: 'Bali', country: '🇮🇩 Indonesia', category: 'Beach', bestSeason: 'Apr - Oct', avgDailyBudgetUSD: 70, vibeTags: ['Spiritual', 'Tropical', 'Surf'], transport: 'Scooter', language: 'Indonesian', currency: 'IDR', emoji: '🌴', attractions: ['Uluwatu Temple', 'Ubud Monkey Forest', 'Tegalalang Rice Terrace', 'Nusa Penida', 'Mount Batur'], desc: 'An Indonesian island known for its forested volcanic mountains, iconic rice paddies, beaches and coral reefs.' },
+            { id: 'paris', name: 'Paris', country: '🇫🇷 France', category: 'City', bestSeason: 'Jun - Aug', avgDailyBudgetUSD: 200, vibeTags: ['Romantic', 'Chic', 'Culinary'], transport: 'Metro', language: 'French', currency: 'EUR', emoji: '🗼', attractions: ['Eiffel Tower', 'Louvre Museum', 'Notre-Dame Cathedral', 'Champs-Élysées', 'Montmartre'], desc: 'The world capital of fashion, gastronomy and culture.' },
+            { id: 'tokyo', name: 'Tokyo', country: '🇯🇵 Japan', category: 'City', bestSeason: 'Mar - May', avgDailyBudgetUSD: 150, vibeTags: ['Neon', 'Future', 'Tradition'], transport: 'Train', language: 'Japanese', currency: 'JPY', emoji: '🏮', attractions: ['Shibuya Crossing', 'Senso-ji Temple', 'Tokyo Skytree', 'Meiji Jingu', 'Harajuku'], desc: 'Japans busy capital, mixes the ultramodern and the traditional, from neon-lit skyscrapers to historic temples.' },
+            { id: 'dubai', name: 'Dubai', country: '🇦🇪 UAE', category: 'City', bestSeason: 'Nov - Mar', avgDailyBudgetUSD: 250, vibeTags: ['Luxury', 'Desert', 'Modern'], transport: 'Metro/Taxi', language: 'Arabic/English', currency: 'AED', emoji: '🏙️', attractions: ['Burj Khalifa', 'Dubai Mall', 'Palm Jumeirah', 'Desert Safari', 'Global Village'], desc: 'A city and emirate in the United Arab Emirates known for luxury shopping, ultramodern architecture and a lively nightlife scene.' },
+            { id: 'london', name: 'London', country: '🇬🇧 UK', category: 'City', bestSeason: 'Jun - Aug', avgDailyBudgetUSD: 180, vibeTags: ['Classic', 'Global', 'Royal'], transport: 'Tube', language: 'English', currency: 'GBP', emoji: '🎡', attractions: ['London Eye', 'British Museum', 'Tower of London', 'Buckingham Palace', 'The Shard'], desc: 'The capital of England and the United Kingdom, a 21st-century city with history stretching back to Roman times.' },
+            { id: 'switzerland', name: 'Switzerland', country: '🇨🇭 Switzerland', category: 'Mountain', bestSeason: 'Jun - Sep', avgDailyBudgetUSD: 300, vibeTags: ['Pristine', 'Scenic', 'Alpine'], transport: 'Train', language: 'German/French', currency: 'CHF', emoji: '🧀', attractions: ['Jungfraujoch', 'Lucerne', 'Zermatt (Matterhorn)', 'Interlaken', 'Rhine Falls'], desc: 'A mountainous Central European country, home to numerous lakes, villages and the high peaks of the Alps.' },
+            { id: 'maldives', name: 'Maldives', country: '🇲🇻 Maldives', category: 'Beach', bestSeason: 'Nov - Apr', avgDailyBudgetUSD: 400, vibeTags: ['Honeymoon', 'Clear Water', 'Resorts'], transport: 'Seaplane/Boat', language: 'Dhivehi', currency: 'MVR', emoji: '🏝️', attractions: ['Male City', 'Vaadhoo Island', 'Banana Reef', 'Maafushi', 'Sun Island'], desc: 'A tropical nation in the Indian Ocean composed of 26 ring-shaped atolls, which are made up of more than 1,000 coral islands.' },
+            { id: 'singapore', name: 'Singapore', country: '🇸🇬 Singapore', category: 'City', bestSeason: 'Dec - Jun', avgDailyBudgetUSD: 160, vibeTags: ['Green', 'Clean', 'Multicultural'], transport: 'MRT', language: 'English/Malay', currency: 'SGD', emoji: '🦁', attractions: ['Gardens by the Bay', 'Marina Bay Sands', 'Universal Studios', 'Sentosa Island', 'Orchard Road'], desc: 'The only island city-state in the world with high-rises and garden parks.' },
+            { id: 'bangkok', name: 'Bangkok', country: '🇹🇭 Thailand', category: 'City', bestSeason: 'Nov - Feb', avgDailyBudgetUSD: 60, vibeTags: ['Vibrant', 'Street Food', 'Temples'], transport: 'Tuk Tuk/Skytrain', language: 'Thai', currency: 'THB', emoji: '🍜', attractions: ['Grand Palace', 'Wat Arun', 'Wat Phra Kaew', 'Chatuchak Market', 'Khaosan Road'], desc: 'Thailands capital, a large city known for ornate shrines and vibrant street life.' },
+            { id: 'kyoto', name: 'Kyoto', country: '🇯🇵 Japan', category: 'Cultural', bestSeason: 'Mar - May', avgDailyBudgetUSD: 120, vibeTags: ['Zen', 'Historical', 'Temples'], transport: 'Bus', language: 'Japanese', currency: 'JPY', emoji: '⛩️', attractions: ['Fushimi Inari', 'Kinkaku-ji', 'Arashiyama Bamboo Grove', 'Gion District', 'Kiyomizu-dera'], desc: 'Once the capital of Japan, famous for its numerous classical Buddhist temples, gardens, imperial palaces, Shinto shrines and traditional wooden houses.' },
+            { id: 'andaman', name: 'Andaman', country: '🇮🇳 India', category: 'Beach', bestSeason: 'Oct - May', avgDailyBudgetUSD: 80, vibeTags: ['Blue', 'Quiet', 'Exotic'], transport: 'Ferry', language: 'Hindi/Bengali', currency: 'INR', emoji: '🐚', attractions: ['Radhanagar Beach', 'Cellular Jail', 'Havelock Island', 'Neil Island', 'Baratang Island'], desc: 'A tropical paradise known for its pristine beaches and clear waters.' },
+            { id: 'rishikesh', name: 'Rishikesh', country: '🇮🇳 India', category: 'Mountain', bestSeason: 'Mar - May', avgDailyBudgetUSD: 30, vibeTags: ['Spiritual', 'Yoga', 'River'], transport: 'Walk/Rickshaw', language: 'Hindi', currency: 'INR', emoji: '🧘', attractions: ['Laxman Jhula', 'Triveni Ghat', 'Beatles Ashram', 'Parmarth Niketan', 'Neer Garh Waterfall'], desc: 'The Yoga Capital of the World, located in the foothills of the Himalayas.' },
+            { id: 'udaipur', name: 'Udaipur', country: '🇮🇳 India', category: 'Cultural', bestSeason: 'Sep - Mar', avgDailyBudgetUSD: 50, vibeTags: ['Royal', 'Romantic', 'Lakes'], transport: 'Auto/Taxi', language: 'Hindi/Rajasthani', currency: 'INR', emoji: '🛶', attractions: ['City Palace', 'Lake Pichola', 'Jag Mandir', 'Saheliyon-ki-Bari', 'Fateh Sagar Lake'], desc: 'Known as the City of Lakes, Udaipur is the crown jewel of Rajasthan.' },
+            { id: 'coorg', name: 'Coorg', country: '🇮🇳 India', category: 'Mountain', bestSeason: 'Oct - Mar', avgDailyBudgetUSD: 45, vibeTags: ['Green', 'Coffee', 'Mist'], transport: 'Jeep/Car', language: 'Kodava/Kannada', currency: 'INR', emoji: '☕', attractions: ['Abbey Falls', 'Raja Seat', 'Dubare Elephant Camp', 'Namdroling Monastery', 'Talakaveri'], desc: 'An administrative district in Karnataka, known for its coffee plantations and hills.' },
+            { id: 'kashmir', name: 'Kashmir', country: '🇮🇳 India', category: 'Mountain', bestSeason: 'Mar - Oct', avgDailyBudgetUSD: 70, vibeTags: ['Paradise', 'Snow', 'Lakes'], transport: 'Shikara/Taxi', language: 'Kashmiri/Urdu', currency: 'INR', emoji: '❄️', attractions: ['Dal Lake', 'Gulmarg', 'Pahalgam', 'Sonamarg', 'Shalimar Bagh'], desc: 'Known as "Heaven on Earth," famous for its stunning valleys and lakes.' },
+            { id: 'pondicherry', name: 'Pondicherry', country: '🇮🇳 India', category: 'Cultural', bestSeason: 'Oct - Mar', avgDailyBudgetUSD: 40, vibeTags: ['French', 'Coast', 'Peace'], transport: 'Cycle/Scooter', language: 'Tamil/French', currency: 'INR', emoji: '🥖', attractions: ['Auroville', 'Rock Beach', 'French Quarter', 'Paradise Beach', 'Matrimandir'], desc: 'A former French colony, now a charming coastal town with European vibes.' },
+            { id: 'hampi', name: 'Hampi', country: '🇮🇳 India', category: 'Cultural', bestSeason: 'Oct - Feb', avgDailyBudgetUSD: 35, vibeTags: ['Ancient', 'Rocks', 'Mystic'], transport: 'Tuk Tuk/Moped', language: 'Kannada', currency: 'INR', emoji: '🛕', attractions: ['Virupaksha Temple', 'Vitthala Temple', 'Lotus Mahal', 'Elephant Stables', 'Hemakuta Hill'], desc: 'A UNESCO World Heritage site known for its ruins of the Vijayanagara Empire.' },
+            { id: 'spiti', name: 'Spiti', country: '🇮🇳 India', category: 'Mountain', bestSeason: 'Jun - Sep', avgDailyBudgetUSD: 50, vibeTags: ['Remote', 'Stark', 'Buddhist'], transport: '4x4/Bike', language: 'Boti/Hindi', currency: 'INR', emoji: '🏔️', attractions: ['Key Monastery', 'Chandratal Lake', 'Kaza', 'Hikkim', 'Langza'], desc: 'A cold desert mountain valley located high in the Himalayas.' },
+            { id: 'darjeeling', name: 'Darjeeling', country: '🇮🇳 India', category: 'Mountain', bestSeason: 'Apr - Jun', avgDailyBudgetUSD: 45, vibeTags: ['Tea', 'Hills', 'Classic'], transport: 'Taxi/Toy Train', language: 'Nepali/Bengali', currency: 'INR', emoji: '🚂', attractions: ['Tiger Hill', 'Batasia Loop', 'Tea Gardens', 'Peace Pagoda', 'Ghoom Monastery'], desc: 'Famous for its tea industry and the Darjeeling Himalayan Railway.' },
+            { id: 'varanasi', name: 'Varanasi', country: '🇮🇳 India', category: 'Cultural', bestSeason: 'Oct - Mar', avgDailyBudgetUSD: 30, vibeTags: ['Sacred', 'Ancient', 'Chaos'], transport: 'Walk/Boat', language: 'Hindi', currency: 'INR', emoji: '🕯️', attractions: ['Kashi Vishwanath', 'Dashashwamedh Ghat', 'Ganga Aarti', 'Sarnath', 'Manikarnika Ghat'], desc: 'One of the oldest continuously inhabited cities in the world.' },
+            { id: 'nyc', name: 'New York', country: '🇺🇸 USA', category: 'City', bestSeason: 'Sep - Nov', avgDailyBudgetUSD: 250, vibeTags: ['Fast', 'Iconic', 'Culture'], transport: 'Subway', language: 'English', currency: 'USD', emoji: '🗽', attractions: ['Times Square', 'Central Park', 'Statue of Liberty', 'Empire State Building', 'Brooklyn Bridge'], desc: 'The city that never sleeps, a global hub for finance, culture and media.' },
+            { id: 'iceland', name: 'Iceland', country: '🇮🇸 Iceland', category: 'Nature', bestSeason: 'Jun - Aug', avgDailyBudgetUSD: 300, vibeTags: ['Wild', 'Otherworldly', 'Ice'], transport: 'Rental Car', language: 'Icelandic', currency: 'ISK', emoji: '🌋', attractions: ['Blue Lagoon', 'Golden Circle', 'Skogafoss', 'Reynisfjara', 'Jokulsarlon'], desc: 'A Nordic island nation defined by its dramatic landscape with volcanoes, geysers, hot springs and lava fields.' },
+            { id: 'santorini', name: 'Santorini', country: '🇬🇷 Greece', category: 'Beach', bestSeason: 'May - Sep', avgDailyBudgetUSD: 220, vibeTags: ['Sunset', 'White/Blue', 'Chic'], transport: 'ATV/Bus', language: 'Greek', currency: 'EUR', emoji: '🇬🇷', attractions: ['Oia Sunset', 'Fira', 'Red Beach', 'Ancient Thera', 'Akrotiri'], desc: 'One of the Cyclades islands in the Aegean Sea, famous for its whitewashed houses and stunning caldera views.' },
+            { id: 'vietnam', name: 'Vietnam', country: '🇻🇳 Vietnam', category: 'Cultural', bestSeason: 'Feb - Apr', avgDailyBudgetUSD: 40, vibeTags: ['Heritage', 'Lush', 'Food'], transport: 'Motorbike/Train', language: 'Vietnamese', currency: 'VND', emoji: '🏮', attractions: ['Ha Long Bay', 'Hoi An Ancient Town', 'Ho Chi Minh City', 'Hanoi Old Quarter', 'Sapa Rice Fields'], desc: 'A country in Southeast Asia known for its beaches, rivers, Buddhist pagodas and bustling cities.' },
+            { id: 'lisbon', name: 'Lisbon', country: '🇵🇹 Portugal', category: 'City', bestSeason: 'Mar - May', avgDailyBudgetUSD: 110, vibeTags: ['Tiled', 'Hilly', 'Sunny'], transport: 'Tram', language: 'Portuguese', currency: 'EUR', emoji: '🚋', attractions: ['Belem Tower', 'Alfama District', 'Jerónimos Monastery', 'Castelo de S. Jorge', 'Sintra'], desc: 'The hilly, coastal capital city of Portugal, known for its cafe culture and fado music.' }
+        ];
+
+        // --- PLACES & EVENTS DATABASE ---
+        const PLACES_DB = [
+            { id: 'p1', name: 'Bademiya', category: 'Restaurants', city: 'Mumbai', country: 'India', estCost: 15, rating: 4.5, desc: 'Famous street food and kebabs in South Mumbai.', hours: '12 PM - 3 AM' },
+            { id: 'p2', name: 'Karim’s', category: 'Restaurants', city: 'Delhi', country: 'India', estCost: 20, rating: 4.7, desc: 'Historic Mughal cuisine near Jama Masjid.', hours: '11 AM - 11 PM' },
+            { id: 'p3', name: 'Mavalli Tiffin Room', category: 'Restaurants', city: 'Bengaluru', country: 'India', estCost: 10, rating: 4.8, desc: 'Legendary South Indian breakfast spot.', hours: '6:30 AM - 11 AM, 12:30 PM - 9 PM' },
+            { id: 'p4', name: 'Toit', category: 'Restaurants', city: 'Bengaluru', country: 'India', estCost: 25, rating: 4.6, desc: 'Popular craft brewery and pub.', hours: '12 PM - 12 AM' },
+            { id: 'p5', name: 'Bukhara', category: 'Restaurants', city: 'Delhi', country: 'India', estCost: 80, rating: 4.9, desc: 'World-renowned for North Indian kebabs.', hours: '12:30 PM - 2:45 PM, 7 PM - 11:45 PM' },
+            { id: 'p6', name: 'Gateway of India', category: 'Attractions', city: 'Mumbai', country: 'India', estCost: 0, rating: 4.5, desc: 'Iconic arch monument built during the British Raj.', hours: 'Open 24 hours' },
+            { id: 'p7', name: 'Taj Mahal', category: 'Attractions', city: 'Agra', country: 'India', estCost: 15, rating: 5.0, desc: 'World famous ivory-white marble mausoleum.', hours: '6 AM - 7 PM (Closed Fridays)' },
+            { id: 'p8', name: 'Sunburn Goa', category: 'Events', city: 'Goa', country: 'India', estCost: 100, rating: 4.4, desc: 'Indias premier electronic music festival.', hours: 'Dec 28-30' },
+            { id: 'p9', name: 'Scuba Diving', category: 'Activities', city: 'Andaman', country: 'India', estCost: 60, rating: 4.8, desc: 'Explore the vibrant coral reefs of Havelock.', hours: '7 AM - 1 PM' },
+            { id: 'p10', name: 'Paragliding', category: 'Activities', city: 'Manali', country: 'India', estCost: 40, rating: 4.7, desc: 'Fly over the scenic Solang Valley.', hours: '9 AM - 4 PM' },
+            { id: 'p11', name: 'Eiffel Tower', category: 'Attractions', city: 'Paris', country: 'France', estCost: 30, rating: 4.8, desc: 'Symbol of France and global cultural icon.', hours: '9:30 AM - 11:45 PM' },
+            { id: 'p12', name: 'Colosseum', category: 'Attractions', city: 'Rome', country: 'Italy', estCost: 25, rating: 4.9, desc: 'Ancient amphitheatre in the centre of Rome.', hours: '8:30 AM - 7 PM' },
+            { id: 'p13', name: 'Louvre Museum', category: 'Attractions', city: 'Paris', country: 'France', estCost: 20, rating: 4.7, desc: 'The worlds largest art museum.', hours: '9 AM - 6 PM' },
+            { id: 'p14', name: 'Tomorrowland', category: 'Events', city: 'Boom', country: 'Belgium', estCost: 400, rating: 4.9, desc: 'The worlds biggest electronic dance music festival.', hours: 'July' },
+            { id: 'p15', name: 'Burj Khalifa', category: 'Attractions', city: 'Dubai', country: 'UAE', estCost: 45, rating: 4.8, desc: 'The tallest building in the world.', hours: '10 AM - 12 AM' },
+            { id: 'p16', name: 'Desert Safari', category: 'Activities', city: 'Dubai', country: 'UAE', estCost: 50, rating: 4.6, desc: 'Dune bashing, camel rides and dinner under the stars.', hours: '3 PM - 9 PM' },
+            { id: 'p17', name: 'Cooking Class', category: 'Activities', city: 'Bangkok', country: 'Thailand', estCost: 35, rating: 4.7, desc: 'Learn to cook authentic Thai dishes.', hours: '9 AM - 1 PM' },
+            { id: 'p18', name: 'Grand Palace', category: 'Attractions', city: 'Bangkok', country: 'Thailand', estCost: 15, rating: 4.6, desc: 'A complex of buildings at the heart of Bangkok.', hours: '8:30 AM - 3:30 PM' },
+            { id: 'p19', name: 'Shibuya Crossing', category: 'Attractions', city: 'Tokyo', country: 'Japan', estCost: 0, rating: 4.5, desc: 'Famous scramble crossing in front of Shibuya Station.', hours: 'Open 24 hours' },
+            { id: 'p20', name: 'Ramen Ichiraku', category: 'Restaurants', city: 'Tokyo', country: 'Japan', estCost: 12, rating: 4.5, desc: 'Delicious traditional ramen bowls.', hours: '11 AM - 10 PM' },
+            { id: 'p21', name: 'Central Park', category: 'Attractions', city: 'New York', country: 'USA', estCost: 0, rating: 4.8, desc: 'Huge urban park in the heart of Manhattan.', hours: '6 AM - 1 AM' },
+            { id: 'p22', name: 'Broadway Show', category: 'Events', city: 'New York', country: 'USA', estCost: 120, rating: 4.9, desc: 'World-class theatrical performances.', hours: 'Varies' },
+            { id: 'p23', name: 'Marina Bay Sands', category: 'Stays', city: 'Singapore', country: 'Singapore', estCost: 500, rating: 4.8, desc: 'Iconic hotel with a massive rooftop infinity pool.', hours: 'Check-in 3 PM' },
+            { id: 'p24', name: 'Gardens by the Bay', category: 'Attractions', city: 'Singapore', country: 'Singapore', estCost: 20, rating: 4.7, desc: 'Futuristic nature park with giant Supertrees.', hours: '9 AM - 9 PM' },
+            { id: 'p25', name: 'London Eye', category: 'Attractions', city: 'London', country: 'UK', estCost: 35, rating: 4.5, desc: 'Massive observation wheel on the South Bank.', hours: '10 AM - 8:30 PM' },
+            { id: 'p26', name: 'British Museum', category: 'Attractions', city: 'London', country: 'UK', estCost: 0, rating: 4.8, desc: 'Dedicated to human history, art and culture.', hours: '10 AM - 5 PM' },
+            { id: 'p27', name: 'The Taj Mahal Palace', category: 'Stays', city: 'Mumbai', country: 'India', estCost: 300, rating: 4.9, desc: 'Legendary luxury hotel overlooking the Arabian Sea.', hours: 'Check-in 2 PM' },
+            { id: 'p28', name: 'Zostel', category: 'Stays', city: 'Manali', country: 'India', estCost: 15, rating: 4.6, desc: 'Cool social hostel for backpackers.', hours: 'Check-in 12 PM' },
+            { id: 'p29', name: 'Trishna', category: 'Restaurants', city: 'Mumbai', country: 'India', estCost: 40, rating: 4.7, desc: 'Coastal treats known for Butter Pepper Garlic crab.', hours: '12 PM - 3:30 PM, 6:30 PM - 12 AM' },
+            { id: 'p30', name: 'Blue Lagoon', category: 'Activities', city: 'Reykjavik', country: 'Iceland', estCost: 80, rating: 4.6, desc: 'Geothermal spa located in a lava field.', hours: '8 AM - 10 PM' },
+            { id: 'p31', name: 'Mavalli Tiffin Room', category: 'Restaurants', city: 'Bengaluru', country: 'India', estCost: 10, rating: 4.8, desc: 'Iconic tiffin room serving classic South Indian fare.', hours: '6:30 AM - 11 AM' },
+            { id: 'p32', name: 'The Taj Mahal Palace', category: 'Stays', city: 'Mumbai', country: 'India', estCost: 400, rating: 4.9, desc: 'Luxury hotel with history at every corner.', hours: '24/7' },
+            { id: 'p33', name: 'Sushi Saito', category: 'Restaurants', city: 'Tokyo', country: 'Japan', estCost: 150, rating: 4.9, desc: 'Highly exclusive and world-renowned sushi experience.', hours: '12 PM - 10 PM' },
+            { id: 'p34', name: 'Eiffel Tower', category: 'Attractions', city: 'Paris', country: 'France', estCost: 30, rating: 4.8, desc: 'Symbol of love and the centerpiece of Paris.', hours: '9 AM - 12 AM' },
+            { id: 'p35', name: 'Tomorrowland', category: 'Events', city: 'Boom', country: 'Belgium', estCost: 500, rating: 4.9, desc: 'The world\'s most famous dance music festival.', hours: 'July' },
+            { id: 'p36', name: 'Grand Canyon', category: 'Attractions', city: 'Arizona', country: 'USA', estCost: 35, rating: 4.9, desc: 'Vast, colorful canyon carved by the Colorado River.', hours: 'Open 24h' },
+            { id: 'p37', name: 'Machu Picchu', category: 'Attractions', city: 'Cusco', country: 'Peru', estCost: 50, rating: 5.0, desc: 'Incan citadel set high in the Andes Mountains.', hours: '6 AM - 5 PM' },
+            { id: 'p38', name: 'Great Wall of China', category: 'Attractions', city: 'Beijing', country: 'China', estCost: 20, rating: 4.8, desc: 'Ancient series of walls and fortifications.', hours: '7 AM - 6 PM' },
+            { id: 'p39', name: 'Santorini Sunset', category: 'Activities', city: 'Oia', country: 'Greece', estCost: 0, rating: 4.9, desc: 'World famous sunset view from the caldera.', hours: 'Sunset' },
+            { id: 'p40', name: 'Oktoberfest', category: 'Events', city: 'Munich', country: 'Germany', estCost: 100, rating: 4.7, desc: 'World\'s largest beer festival and funfair.', hours: 'Sept - Oct' },
+            { id: 'p41', name: 'Table Mountain Hike', category: 'Activities', city: 'Cape Town', country: 'South Africa', estCost: 0, rating: 4.8, desc: 'Hike to the top for panoramic views of the city.', hours: 'Sunrise-Sunset' },
+            { id: 'p42', name: 'Banff National Park', category: 'Attractions', city: 'Banff', country: 'Canada', estCost: 20, rating: 4.9, desc: 'Stunning rocky mountain scenery and turquoise lakes.', hours: 'Open 24h' },
+            { id: 'p43', name: 'Noma', category: 'Restaurants', city: 'Copenhagen', country: 'Denmark', estCost: 450, rating: 4.9, desc: 'Reinventing Nordic cuisine with seasonal local foraging.', hours: '6 PM - 12 AM' },
+            { id: 'p44', name: 'Carnival of Venice', category: 'Events', city: 'Venice', country: 'Italy', estCost: 0, rating: 4.7, desc: 'Famous for its elaborate masks and costumes.', hours: 'Feb' },
+            { id: 'p45', name: 'Dune Bashing', category: 'Activities', city: 'Dubai', country: 'UAE', estCost: 60, rating: 4.7, desc: 'High-speed thrill ride across the desert dunes.', hours: '3 PM - 7 PM' },
+            { id: 'p46', name: 'Northern Lights Tour', category: 'Activities', city: 'Tromso', country: 'Norway', estCost: 150, rating: 4.8, desc: 'Chasing the Aurora Borealis across the Arctic sky.', hours: '9 PM - 2 AM' },
+            { id: 'p47', name: 'Angkor Wat', category: 'Attractions', city: 'Siem Reap', country: 'Cambodia', estCost: 37, rating: 4.9, desc: 'Largest religious monument in the world.', hours: '5 AM - 6 PM' },
+            { id: 'p48', name: 'Galapagos Cruise', category: 'Activities', city: 'Galapagos', country: 'Ecuador', estCost: 2000, rating: 4.9, desc: 'Encounter unique wildlife in their natural habitat.', hours: 'Multiday' },
+            { id: 'p49', name: 'Iguazu Falls', category: 'Attractions', city: 'Foz do Iguaçu', country: 'Brazil', estCost: 25, rating: 4.9, desc: 'Vast waterfalls spanning Argentina and Brazil.', hours: '8 AM - 6 PM' },
+            { id: 'p50', name: 'Burning Man', category: 'Events', city: 'Black Rock City', country: 'USA', estCost: 600, rating: 4.8, desc: 'Annual event focused on community, art, and self-expression.', hours: 'Aug' },
+            { id: 'p51', name: 'La Sagrada Familia', category: 'Attractions', city: 'Barcelona', country: 'Spain', estCost: 26, rating: 4.8, desc: 'Gaudí\'s unfinished masterpiece basilica.', hours: '9 AM - 6 PM' },
+            { id: 'p52', name: 'Kyoto Bamboo Forest', category: 'Attractions', city: 'Kyoto', country: 'Japan', estCost: 0, rating: 4.7, desc: 'Soaring stalks of green bamboo in Arashiyama.', hours: 'Open 24h' },
+            { id: 'p53', name: 'Holi Festival', category: 'Events', city: 'Mathura', country: 'India', estCost: 10, rating: 4.9, desc: 'Festival of colors celebrating spring and love.', hours: 'March' },
+            { id: 'p54', name: 'Great Barrier Reef Dive', category: 'Activities', city: 'Cairns', country: 'Australia', estCost: 200, rating: 4.9, desc: 'Diving in the world\'s largest coral reef system.', hours: '8 AM - 4 PM' },
+            { id: 'p55', name: 'Pyramids of Giza', category: 'Attractions', city: 'Cairo', country: 'Egypt', estCost: 15, rating: 4.8, desc: 'Ancient limestone structures from the Old Kingdom.', hours: '8 AM - 5 PM' },
+            { id: 'p56', name: 'Pike Place Market', category: 'Attractions', city: 'Seattle', country: 'USA', estCost: 0, rating: 4.6, desc: 'Famous farmer\'s market and waterfront district.', hours: '9 AM - 6 PM' },
+            { id: 'p57', name: 'Glastonbury Festival', category: 'Events', city: 'Pilton', country: 'UK', estCost: 400, rating: 4.8, desc: 'Legendary music and performing arts festival.', hours: 'June' },
+            { id: 'p58', name: 'Safari in Serengeti', category: 'Activities', city: 'Serengeti', country: 'Tanzania', estCost: 500, rating: 5.0, desc: 'Withess the Great Migration of zebras and wildebeest.', hours: 'Sunrise-Sunset' },
+            { id: 'p59', name: 'Yosemite National Park', category: 'Attractions', city: 'California', country: 'USA', estCost: 35, rating: 4.9, desc: 'Famous for its giant sequoias and granite cliffs.', hours: 'Open 24h' },
+            { id: 'p61', name: 'Alcatraz Island', category: 'Attractions', city: 'San Francisco', country: 'USA', estCost: 45, rating: 4.8, desc: 'Former federal prison on an island in SF Bay.', hours: '9 AM - 6 PM' },
+            { id: 'p62', name: 'Varanasi Ghats', category: 'Attractions', city: 'Varanasi', country: 'India', estCost: 0, rating: 4.9, desc: 'Riverside steps used for bathing and ceremonies.', hours: 'Sunrise-Sunset' },
+            { id: 'p63', name: 'Hot Air Ballooning', category: 'Activities', city: 'Cappadocia', country: 'Turkey', estCost: 200, rating: 4.9, desc: 'Float over the fairy chimneys at sunrise.', hours: 'Sunrise' },
+            { id: 'p64', name: 'Okavango Delta', category: 'Attractions', city: 'Maun', country: 'Botswana', estCost: 300, rating: 4.9, desc: 'Vast inland river delta known for its wildlife.', hours: 'Open 24h' },
+            { id: 'p65', name: 'Disneyland', category: 'Attractions', city: 'Anaheim', country: 'USA', estCost: 150, rating: 4.8, desc: 'The happiest place on earth.', hours: '8 AM - 12 AM' },
+            { id: 'p66', name: 'Sydney Opera House', category: 'Attractions', city: 'Sydney', country: 'Australia', estCost: 40, rating: 4.8, desc: 'Multi-venue performing arts centre in Sydney.', hours: '9 AM - 5 PM' },
+            { id: 'p67', name: 'Victoria Falls', category: 'Attractions', city: 'Livingstone', country: 'Zambia', estCost: 30, rating: 4.9, desc: 'Largest waterfall in the world on the Zambezi river.', hours: '6 AM - 6 PM' },
+            { id: 'p68', name: 'Stonehenge', category: 'Attractions', city: 'Amesbury', country: 'UK', estCost: 25, rating: 4.5, desc: 'Prehistoric monument consisting of a ring of standing stones.', hours: '9:30 AM - 5 PM' },
+            { id: 'p69', name: 'Louvre Museum', category: 'Attractions', city: 'Paris', country: 'France', estCost: 17, rating: 4.9, desc: 'World\'s largest art museum and a historic monument.', hours: '9 AM - 6 PM' },
+            { id: 'p70', name: 'Statue of Liberty', category: 'Attractions', city: 'NYC', country: 'USA', estCost: 24, rating: 4.7, desc: 'Colossal neoclassical sculpture on Liberty Island.', hours: '9 AM - 5 PM' },
+            { id: 'p71', name: 'Antelope Canyon', category: 'Attractions', city: 'Page', country: 'USA', estCost: 60, rating: 4.9, desc: 'Slot canyon on Navajo land, east of Page.', hours: '8 AM - 5 PM' },
+            { id: 'p72', name: 'Mecca Royal Hotel Clock Tower', category: 'Stays', city: 'Mecca', country: 'Saudi Arabia', estCost: 300, rating: 4.7, desc: 'Government-owned complex adjacent to the Grand Mosque.', hours: '24/7' },
+            { id: 'p73', name: 'Burj al Arab', category: 'Stays', city: 'Dubai', country: 'UAE', estCost: 1500, rating: 4.9, desc: 'Luxury hotel on an artificial island.', hours: '24/7' },
+            { id: 'p74', name: 'Raffles Singapore', category: 'Stays', city: 'Singapore', country: 'Singapore', estCost: 800, rating: 4.8, desc: 'Colonial-style luxury hotel with a long history.', hours: '24/7' },
+            { id: 'p75', name: 'Central Park Picnic', category: 'Activities', city: 'NYC', country: 'USA', estCost: 20, rating: 4.8, desc: 'Relax in the heart of Manhattan.', hours: 'Sunrise-Sunset' },
+            { id: 'p76', name: 'Mount Fuji Climbing', category: 'Activities', city: 'Shizuoka', country: 'Japan', estCost: 50, rating: 4.9, desc: 'Climb the highest mountain in Japan.', hours: 'July - Sept' },
+            { id: 'p77', name: 'Gondola Ride', category: 'Activities', city: 'Venice', country: 'Italy', estCost: 80, rating: 4.6, desc: 'Traditional Venetian rowing boat ride.', hours: '9 AM - 7 PM' },
+            { id: 'p78', name: 'Elephant Nature Park', category: 'Activities', city: 'Chiang Mai', country: 'Thailand', estCost: 75, rating: 4.9, desc: 'Sanctuary and rescue centre for elephants.', hours: '9 AM - 5 PM' },
+            { id: 'p79', name: 'Wine Tasting', category: 'Activities', city: 'Napa Valley', country: 'USA', estCost: 100, rating: 4.8, desc: 'Visit famous vineyards and taste world-class wines.', hours: '10 AM - 5 PM' },
+            { id: 'p80', name: 'Scuba Diving at Great Blue Hole', category: 'Activities', city: 'Belize City', country: 'Belize', estCost: 300, rating: 4.9, desc: 'Dive into a giant marine sinkhole.', hours: '8 AM - 4 PM' },
+            { id: 'p81', name: 'Hiking in Cinque Terre', category: 'Activities', city: 'Liguria', country: 'Italy', estCost: 10, rating: 4.9, desc: 'Hike through five colorful seaside villages.', hours: 'Sunrise-Sunset' },
+        ];
+
+        // --- DATA STATE ---
+        let currentStep = 1;
+        let activeTrip = JSON.parse(localStorage.getItem('activeTrip') || 'null');
+        let tripHistory = JSON.parse(localStorage.getItem('tripHistory') || '[]');
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        let itineraryHistory = JSON.parse(localStorage.getItem('itineraryHistory') || '{}');
+        let favoritePlaces = JSON.parse(localStorage.getItem('favoritePlaces') || '[]');
+        let recentPlaces = JSON.parse(localStorage.getItem('recentPlaces') || '[]');
+        let customPlaces = JSON.parse(localStorage.getItem('customPlaces') || '[]');
+        
+        let selectedExploreDate = new Date().toISOString().split('T')[0];
+        let exploreFilterCity = 'All';
+        let exploreFilterCategory = 'All';
+        let addSlotTarget = 'morning';
+        let currentItinerary = null;
+        let filterCategory = 'All';
+
+        const onboardingData = {
+            name: '',
+            dob: '',
+            homeCity: '',
+            currency: 'USD',
+            travelStyle: '',
+            tripDuration: '',
+            budgetTier: '',
+            accommodation: [],
+            companions: '',
+            foodPrefs: [],
+            interests: [],
+            languages: [],
+            mobility: 2,
+            travelPersona: '',
+            dailyBudget: 0,
+            budgetSplit: {}
+        };
+
+        const budgetHints = {
+            'INR': { Budget: 2000, 'Mid-range': 6000, Luxury: 15000 },
+            'USD': { Budget: 30, 'Mid-range': 100, Luxury: 300 },
+            'EUR': { Budget: 25, 'Mid-range': 90, Luxury: 250 },
+            'GBP': { Budget: 20, 'Mid-range': 80, Luxury: 220 }
+        };
+
+        const currencySymbols = { INR: '₹', USD: '$', EUR: '€', GBP: '£' };
+
+        // --- APP INITIALIZATION ---
+        function initApp() {
+            lucide.createIcons();
+            checkAuthStatus();
+        }
+
+        function checkAuthStatus() {
+            const currentUser = localStorage.getItem('currentUser');
+            const userProfile = localStorage.getItem('userProfile');
+
+            if (!currentUser) {
+                // If on landing, stay. If triggered app, show auth.
+                // We'll handle this in switchToApp()
+            } else if (!userProfile) {
+                showView('onboarding-view');
+                setupWizard();
+            } else {
+                showView('app-view');
+                populateAppWithProfile(JSON.parse(userProfile));
+            }
+        }
+
+        function showView(viewId) {
+            const views = ['landing-view', 'auth-view', 'onboarding-view', 'app-view'];
+            views.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden-view');
+            });
+            document.getElementById(viewId).classList.remove('hidden-view');
+            window.scrollTo(0, 0);
+        }
+
+        // --- AUTH LOGIC ---
+        function toggleAuthTab(tab) {
+            const isLogin = tab === 'login';
+            document.getElementById('tab-login').className = `flex-1 py-4 font-bold ${isLogin ? 'text-teal border-teal' : 'text-gray-400 border-transparent'} border-b-2 transition-all`;
+            document.getElementById('tab-signup').className = `flex-1 py-4 font-bold ${!isLogin ? 'text-teal border-teal' : 'text-gray-400 border-transparent'} border-b-2 transition-all`;
+            document.getElementById('login-form').classList.toggle('hidden', !isLogin);
+            document.getElementById('signup-form').classList.toggle('hidden', isLogin);
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const pass = document.getElementById('signup-password').value;
+            const confirm = document.getElementById('signup-confirm').value;
+
+            if (pass !== confirm) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            if (users.find(u => u.email === email)) {
+                alert('Email already registered!');
+                return;
+            }
+
+            const newUser = { name, email, password: pass };
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('currentUser', JSON.stringify({ name, email }));
+            
+            // Proceed to onboarding
+            onboardingData.name = name;
+            showView('onboarding-view');
+            setupWizard();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email && u.password === pass);
+
+            if (!user) {
+                alert('Invalid email or password!'); // Simple toast replacement
+                return;
+            }
+
+            localStorage.setItem('currentUser', JSON.stringify({ name: user.name, email: user.email }));
+            checkAuthStatus();
+        }
+
+        function continueAsGuest() {
+            const guest = { name: "Guest Traveller", email: "guest@wanderwise.ai" };
+            localStorage.setItem('currentUser', JSON.stringify(guest));
+            onboardingData.name = guest.name;
+            checkAuthStatus();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('userProfile');
+            showView('landing-view');
+        }
+
+        // --- WIZARD LOGIC ---
+        function setupWizard() {
+            currentStep = 1;
+            renderStep();
+            document.getElementById('ob-name').value = onboardingData.name || '';
+            setCurrency('USD'); // Default
+            setCompanions('Solo');
+        }
+
+        function renderStep() {
+            // Hide all steps
+            document.querySelectorAll('.wizard-step').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`ob-step-${currentStep}`).classList.remove('hidden');
+            
+            // Update Progress
+            const progress = (currentStep / 4) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('step-counter').innerText = `Step ${currentStep} of 4`;
+            
+            // Nav buttons
+            document.getElementById('btn-prev').classList.toggle('invisible', currentStep === 1);
+            document.getElementById('btn-next').innerText = currentStep === 4 ? 'Complete' : 'Continue';
+            document.getElementById('wizard-nav').classList.toggle('hidden', false);
+        }
+
+        function nextStep() {
+            if (currentStep < 4) {
+                if (!validateStep(currentStep)) return;
+                currentStep++;
+                renderStep();
+            } else {
+                updateSummary();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                renderStep();
+            }
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                onboardingData.name = document.getElementById('ob-name').value;
+                onboardingData.dob = document.getElementById('ob-dob').value;
+                onboardingData.homeCity = document.getElementById('ob-city').value;
+                if (!onboardingData.name || !onboardingData.homeCity) {
+                    alert('Please fill in your name and city.');
+                    return false;
+                }
+            }
+            if (step === 2 && !onboardingData.travelStyle) {
+                alert('Please select a travel style.');
+                return false;
+            }
+            if (step === 3 && !onboardingData.budgetTier) {
+                alert('Please select a budget tier.');
+                return false;
+            }
+            return true;
+        }
+
+        function setCurrency(cur) {
+            onboardingData.currency = cur;
+            const buttons = ['cur-INR', 'cur-USD', 'cur-EUR', 'cur-GBP'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                const isActive = id.includes(cur);
+                btn.className = `flex-1 py-3 font-bold rounded-xl transition-all ${isActive ? 'bg-teal text-white shadow-md' : 'text-gray-500 hover:bg-gray-200'}`;
+            });
+            // Update hints in Step 3
+            updateBudgetHints();
+        }
+
+        function updateBudgetHints() {
+            const sym = currencySymbols[onboardingData.currency];
+            const hints = budgetHints[onboardingData.currency];
+            document.querySelector('#hint-budget .val').innerText = hints.Budget.toLocaleString();
+            document.querySelector('#hint-mid .val').innerText = hints['Mid-range'].toLocaleString();
+            document.querySelector('#hint-lux .val').innerText = hints.Luxury.toLocaleString();
+            document.querySelectorAll('.budget-card .text-teal').forEach(el => {
+                el.innerHTML = el.innerHTML.replace(/[₹$€£]/g, sym);
+            });
+        }
+
+        function selectTravelStyle(style) {
+            onboardingData.travelStyle = style;
+            document.querySelectorAll('.travel-style-card').forEach(c => {
+                c.classList.toggle('active', c.dataset.style === style);
+            });
+        }
+
+        function setTripDuration(dur) {
+            onboardingData.tripDuration = dur;
+            document.querySelectorAll('.duration-chip').forEach(c => {
+                c.classList.toggle('chip-active', c.innerText === dur);
+            });
+        }
+
+        function selectBudget(tier) {
+            onboardingData.budgetTier = tier;
+            document.querySelectorAll('.budget-card').forEach(c => {
+                c.classList.toggle('active', c.dataset.budget === tier);
+            });
+        }
+
+        function setCompanions(comp) {
+            onboardingData.companions = comp;
+            document.querySelectorAll('.comp-btn').forEach(btn => {
+                const isActive = btn.innerText === comp;
+                btn.className = `comp-btn flex-1 py-3 font-bold rounded-xl transition-all ${isActive ? 'bg-navy text-white shadow-md' : 'text-gray-500 hover:bg-gray-200'}`;
+            });
+        }
+
+        function toggleChip(el, category) {
+            const value = el.innerText;
+            el.classList.toggle('chip-active');
+            
+            if (el.classList.contains('chip-active')) {
+                onboardingData[category].push(value);
+            } else {
+                onboardingData[category] = onboardingData[category].filter(v => v !== value);
+            }
+        }
+
+        function updateSummary() {
+            onboardingData.mobility = document.getElementById('mobility-slider').value;
+            
+            // Calculate Persona
+            onboardingData.travelPersona = `${onboardingData.travelStyle} ${onboardingData.budgetTier} Explorer`;
+            
+            // Calculate Budget
+            const hints = budgetHints[onboardingData.currency];
+            onboardingData.dailyBudget = hints[onboardingData.budgetTier];
+            
+            // Split
+            onboardingData.budgetSplit = { stay: 40, food: 25, transport: 15, activities: 15, shopping: 5 };
+
+            // Render Summary
+            document.querySelectorAll('.wizard-step').forEach(s => s.classList.add('hidden'));
+            document.getElementById('ob-summary').classList.remove('hidden');
+            document.getElementById('wizard-nav').classList.add('hidden');
+            
+            const sym = currencySymbols[onboardingData.currency];
+            document.getElementById('sum-persona').innerText = onboardingData.travelPersona;
+            document.getElementById('sum-budget').innerText = `${sym}${onboardingData.dailyBudget.toLocaleString()} / day`;
+            document.getElementById('sum-style').innerText = onboardingData.travelStyle;
+            document.getElementById('sum-companions').innerText = onboardingData.companions;
+            
+            lucide.createIcons();
+        }
+
+        function finishOnboarding() {
+            localStorage.setItem('userProfile', JSON.stringify(onboardingData));
+            checkAuthStatus();
+        }
+
+        // --- TRIPS RENDER LOGIC ---
+        function renderTripsHome() {
+            const grid = document.getElementById('destination-grid');
+            const suggestionContainer = document.getElementById('ai-suggestion-container');
+            const profile = JSON.parse(localStorage.getItem('userProfile'));
+            
+            if (!grid || !profile) return;
+
+            // Render Recommendation
+            const recommended = getRecommendation(profile);
+            if (suggestionContainer) {
+                suggestionContainer.innerHTML = `
+                    <div onclick="openDestination('${recommended.id}')" class="group relative overflow-hidden bg-teal rounded-3xl p-8 md:p-12 text-white shadow-xl shadow-teal-500/20 cursor-pointer">
+                        <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                            <div class="max-w-md">
+                                <span class="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">AI Suggested for You</span>
+                                <h3 class="text-3xl md:text-5xl font-bold heading-font mb-2">${recommended.name}</h3>
+                                <p class="text-white/80 text-sm md:text-lg mb-6">${recommended.desc}</p>
+                                <div class="flex flex-wrap gap-4">
+                                    <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl">
+                                        <i data-lucide="tag" class="w-4 h-4"></i>
+                                        <span class="font-bold whitespace-nowrap">${recommended.category}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                        <span class="font-bold whitespace-nowrap">${recommended.bestSeason}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hidden md:block text-9xl opacity-40 group-hover:scale-110 transition-transform duration-700 select-none">${recommended.emoji}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Render Grid
+            const filtered = DESTINATIONS.filter(d => filterCategory === 'All' || d.category === filterCategory);
+            grid.innerHTML = filtered.map(dest => `
+                <div onclick="openDestination('${dest.id}')" class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-xl transition-all cursor-pointer group">
+                    <div class="aspect-[4/3] rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 mb-6 flex items-center justify-center text-6xl group-hover:scale-105 transition-transform">
+                        ${dest.emoji}
+                    </div>
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="text-lg font-bold text-navy">${dest.name}</h4>
+                        <span class="text-[10px] font-bold bg-gray-100 text-gray-500 px-2 py-1 rounded-md uppercase">${dest.category}</span>
+                    </div>
+                    <p class="text-gray-400 text-xs mb-4 flex items-center gap-1">
+                        <i data-lucide="map-pin" class="w-3 h-3"></i> ${dest.country}
+                    </p>
+                    <div class="flex justify-between items-center pt-4 border-t border-gray-50">
+                        <div class="flex flex-wrap gap-1">
+                            ${dest.vibeTags.slice(0, 2).map(v => `<span class="text-[10px] bg-teal/5 text-teal px-2 py-0.5 rounded-full font-bold">#${v}</span>`).join('')}
+                        </div>
+                        <span class="text-sm font-bold text-navy">$${dest.avgDailyBudgetUSD}/day</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Active Banner
+            const banner = document.getElementById('active-trip-banner');
+            if (activeTrip && banner) {
+                banner.classList.remove('hidden');
+                document.getElementById('active-trip-banner-title').innerText = `Exploring ${activeTrip.destinationName}...`;
+            } else if (banner) {
+                banner.classList.add('hidden');
+            }
+
+            renderHistory();
+            lucide.createIcons();
+        }
+
+        function getRecommendation(profile) {
+            const match = DESTINATIONS.find(d => 
+                d.category.toLowerCase() === profile.travelStyle.toLowerCase() || 
+                d.vibeTags.some(v => profile.interests.includes(v))
+            ) || DESTINATIONS[5];
+            return match;
+        }
+
+        function filterDestinations(cat) {
+            filterCategory = cat;
+            document.querySelectorAll('.filter-chip').forEach(btn => {
+                const isActive = btn.dataset.cat === cat;
+                if (isActive) btn.className = "filter-chip px-4 py-1.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap bg-white text-teal shadow-sm active";
+                else btn.className = "filter-chip px-4 py-1.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap text-gray-500 hover:bg-gray-200";
+            });
+            renderTripsHome();
+        }
+
+        // --- OVERLAY LOGIC ---
+        let currentDestId = null;
+
+        function openDestination(id) {
+            currentDestId = id;
+            const dest = DESTINATIONS.find(d => d.id === id);
+            const profile = JSON.parse(localStorage.getItem('userProfile'));
+            if (!dest) return;
+
+            document.getElementById('dest-detail-name').innerText = dest.name;
+            document.getElementById('dest-detail-country').innerText = dest.country;
+            document.getElementById('dest-detail-cat').innerText = dest.category;
+            document.getElementById('dest-detail-emoji').innerText = dest.emoji;
+            document.getElementById('dest-detail-season').innerText = dest.bestSeason;
+            document.getElementById('dest-detail-budget').innerText = `$${dest.avgDailyBudgetUSD}/day`;
+            document.getElementById('dest-detail-transport').innerText = dest.transport;
+            document.getElementById('dest-detail-lang').innerText = dest.language;
+            document.getElementById('dest-detail-why').innerText = `As a ${profile.travelPersona || 'Explorer'}, you'll love ${dest.name} for its ${dest.vibeTags[0]} and ${dest.attractions[0]}!`;
+            
+            const list = document.getElementById('dest-detail-sights');
+            list.innerHTML = dest.attractions.map((s, i) => `
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <span class="w-6 h-6 bg-navy text-white rounded-full flex items-center justify-center text-[10px] font-bold">${i+1}</span>
+                    <span class="text-sm font-bold text-navy">${s}</span>
+                </div>
+            `).join('');
+
+            const vibes = document.getElementById('dest-detail-vibe');
+            vibes.innerHTML = dest.vibeTags.map(v => `<span class="bg-teal/10 text-teal px-3 py-1 rounded-full text-[10px] font-bold uppercase">#${v}</span>`).join('');
+
+            updateWishlistBtn();
+            document.getElementById('overlay-destination').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeOverlay(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function handleWishlist() {
+            const index = wishlist.indexOf(currentDestId);
+            if (index > -1) wishlist.splice(index, 1);
+            else wishlist.push(currentDestId);
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            updateWishlistBtn();
+        }
+
+        function updateWishlistBtn() {
+            const btn = document.getElementById('dest-wishlist-btn');
+            const isSaved = wishlist.includes(currentDestId);
+            btn.innerHTML = `<i data-lucide="bookmark" class="w-5 h-5 ${isSaved ? 'fill-teal text-teal' : ''}"></i> ${isSaved ? 'Saved' : 'Wishlist'}`;
+            lucide.createIcons();
+        }
+
+        function openPlanner() {
+            closeOverlay('overlay-destination');
+            const dest = DESTINATIONS.find(d => d.id === currentDestId);
+            const profile = JSON.parse(localStorage.getItem('userProfile'));
+            if (!dest) return;
+            document.getElementById('plan-title').innerText = `Planning your ${dest.name} Trip`;
+            generateItineraryHTML(dest, profile);
+            document.getElementById('overlay-planner').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function generateItineraryHTML(dest, profile) {
+            const days = profile.tripDuration === 'Weekend' ? 2 : (profile.tripDuration === '1 week' ? 7 : 10);
+            const style = profile.travelStyle;
+            let html = '';
+            for (let i = 1; i <= days; i++) {
+                html += `
+                    <div class="relative pl-12 pb-10 last:pb-0">
+                        <div class="absolute left-0 top-0 w-1 bg-teal/20 h-full"></div>
+                        <div class="absolute left-[-16px] top-0 w-8 h-8 bg-teal rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg">Day ${i}</div>
+                        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                ${generateSlots(dest, style, i)}
+                             </div>
+                        </div>
+                    </div>
+                `;
+            }
+            currentItinerary = { id: Date.now(), destinationId: dest.id, destinationName: dest.name, days: days };
+            document.getElementById('planner-content').innerHTML = html;
+        }
+
+        function generateSlots(dest, style, day) {
+            const slots = ['Morning', 'Afternoon', 'Evening', 'Night'];
+            const icons = { Morning: 'sun', Afternoon: 'cloud-sun', Evening: 'sunset', Night: 'moon' };
+            return slots.map(s => {
+                const act = day === 1 && s === 'Morning' ? 'Arrival & Check-in' : (dest.attractions[day % 5] || 'Explore Local Gem');
+                return `
+                    <div class="flex items-start gap-3 p-3 rounded-2xl hover:bg-gray-50">
+                        <div class="bg-gray-100 p-2 rounded-lg text-gray-400">
+                             <i data-lucide="${icons[s]}" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-teal uppercase">${s}</p>
+                            <p class="text-sm text-navy font-bold">${act}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startActiveTrip() {
+            activeTrip = { ...currentItinerary, currentDay: 1, startDate: new Date().toISOString(), completedSlots: {}, spent: 0 };
+            localStorage.setItem('activeTrip', JSON.stringify(activeTrip));
+            closeOverlay('overlay-planner');
+            openActiveTripUI();
+            renderTripsHome();
+        }
+
+        function openActiveTripUI() {
+            const dest = DESTINATIONS.find(d => d.id === activeTrip.destinationId);
+            document.getElementById('active-dest-name').innerText = `${dest.name}`;
+            renderActiveDay();
+            document.getElementById('overlay-active-trip').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function resumeActiveTrip() { if (activeTrip) openActiveTripUI(); }
+        function regenerateItinerary() { openPlanner(); }
+
+        function renderActiveDay() {
+            const day = activeTrip.currentDay;
+            document.getElementById('active-day-count').innerText = `Day ${day} of ${activeTrip.days}`;
+            const strip = document.getElementById('active-days-strip');
+            strip.innerHTML = Array.from({length: activeTrip.days}).map((_, i) => `
+                <button onclick="setActiveDay(${i+1})" class="flex-shrink-0 w-12 h-14 rounded-xl flex flex-col items-center justify-center transition-all ${(i+1) === day ? 'bg-teal text-white' : 'bg-white text-gray-400 border border-gray-100'}">
+                    <span class="text-[10px] font-bold">D${i+1}</span>
+                    ${(i+1) < day ? '<i data-lucide="check" class="w-4 h-4 mt-1"></i>' : ''}
+                </button>
+            `).join('');
+            const container = document.getElementById('active-slots-container');
+            container.innerHTML = ['Morning', 'Afternoon', 'Evening', 'Night'].map(s => {
+                const key = `${day}-${s}`;
+                const isDone = activeTrip.completedSlots[key];
+                return `
+                    <div onclick="toggleSlot('${key}')" class="flex items-center gap-4 bg-white p-5 rounded-2xl shadow-sm border border-gray-100 cursor-pointer ${isDone ? 'opacity-50' : ''}">
+                        <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center ${isDone ? 'bg-teal border-teal text-white' : 'border-gray-200'}">
+                            ${isDone ? '✓' : ''}
+                        </div>
+                        <p class="font-bold text-navy">Activity for ${s}</p>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('active-spent').innerText = `$${activeTrip.spent}`;
+            lucide.createIcons();
+        }
+
+        function toggleSlot(key) {
+            activeTrip.completedSlots[key] = !activeTrip.completedSlots[key];
+            activeTrip.spent += activeTrip.completedSlots[key] ? 20 : -20;
+            localStorage.setItem('activeTrip', JSON.stringify(activeTrip));
+            renderActiveDay();
+        }
+
+        function setActiveDay(d) { activeTrip.currentDay = d; renderActiveDay(); }
+        function nextActiveDay() { if (activeTrip.currentDay < activeTrip.days) { activeTrip.currentDay++; renderActiveDay(); } else confirmEndTrip(); }
+        function saveAndCloseActive() { localStorage.setItem('activeTrip', JSON.stringify(activeTrip)); closeOverlay('overlay-active-trip'); renderTripsHome(); }
+
+        function confirmEndTrip() {
+            const completedCount = Object.keys(activeTrip.completedSlots).filter(k => activeTrip.completedSlots[k]).length;
+            const summary = `Trip Summary:\n- Days: ${activeTrip.days}\n- Activities Done: ${completedCount}\n- Total Spent: $${activeTrip.spent}\n\nRate your experience and save to history?`;
+            
+            if (confirm(summary)) {
+                const note = prompt("Any special memory from this trip?", "What an amazing adventure!");
+                const record = { 
+                    ...activeTrip, 
+                    endDate: new Date().toISOString(), 
+                    completedCount,
+                    note: note || 'Amazing trip!',
+                    rating: 5
+                };
+                tripHistory.unshift(record);
+                localStorage.setItem('tripHistory', JSON.stringify(tripHistory));
+                activeTrip = null; 
+                localStorage.removeItem('activeTrip');
+                closeOverlay('overlay-active-trip'); 
+                renderTripsHome(); 
+                updateStats();
+            }
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('trip-history-list');
+            if (tripHistory.length === 0) return;
+            list.innerHTML = tripHistory.map(trip => `
+                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">${DESTINATIONS.find(d => d.id === trip.destinationId)?.emoji || '✈️'}</span>
+                        <div><p class="font-bold text-navy">${trip.destinationName}</p><p class="text-[10px] text-gray-400">${trip.days} Days</p></div>
+                    </div>
+                    <p class="font-bold text-teal">$${trip.spent}</p>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function updateStats() {
+            document.getElementById('stat-trips').innerText = tripHistory.length;
+            document.getElementById('stat-days').innerText = tripHistory.reduce((s,t) => s + t.days, 0);
+            document.getElementById('stat-spend').innerText = `$${tripHistory.reduce((s,t) => s + t.spent, 0)}`;
+        }
+
+        function checkAuthStatus() {
+            const currentUser = localStorage.getItem('currentUser');
+            const userProfile = localStorage.getItem('userProfile');
+            if (!currentUser) showView('landing-view');
+            else if (!userProfile) { showView('onboarding-view'); setupWizard(); }
+            else { showView('app-view'); populateAppWithProfile(JSON.parse(userProfile)); }
+        }
+
+        function populateAppWithProfile(profile) {
+            const sym = currencySymbols[profile.currency];
+            const welcome = document.getElementById('welcome-message');
+            if (welcome) welcome.innerText = `Welcome back, ${profile.name.split(' ')[0]}!`;
+            const budgetPrev = document.getElementById('budget-amount-preview');
+            if (budgetPrev) budgetPrev.innerText = `${sym}${profile.dailyBudget}/day`;
+            const personaPrev = document.getElementById('persona-name-preview');
+            if (personaPrev) personaPrev.innerText = profile.travelPersona;
+            document.getElementById('profile-name').innerText = profile.name;
+            document.getElementById('profile-email').innerText = (JSON.parse(localStorage.getItem('currentUser')) || {}).email || 'user@example.com';
+            document.getElementById('profile-persona').innerText = profile.travelPersona;
+            document.getElementById('profile-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=FF8E72&color=fff&size=200`;
+            renderTripsHome();
+            updateStats();
+            switchTab('dashboard');
+            lucide.createIcons();
+        }
+
+        // --- NAVIGATION HANDLERS ---
+        function switchToApp() {
+            const currentUser = localStorage.getItem('currentUser');
+            const userProfile = localStorage.getItem('userProfile');
+
+            if (!currentUser) {
+                showView('auth-view');
+            } else if (!userProfile) {
+                showView('onboarding-view');
+                setupWizard();
+            } else {
+                showView('app-view');
+                switchTab('dashboard');
+                populateAppWithProfile(JSON.parse(userProfile));
+            }
+        }
+
+        function switchToLanding() {
+            showView('landing-view');
+        }
+
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => btn.classList.remove('nav-active'));
+            
+            const mobileBtns = document.querySelectorAll('nav.md\\:hidden button');
+            mobileBtns.forEach(btn => {
+                btn.classList.add('text-gray-400');
+                btn.classList.remove('text-teal');
+            });
+
+            const targetTab = document.getElementById(`tab-${tabName}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+
+            const desktopBtn = document.getElementById(`btn-${tabName}`);
+            if (desktopBtn) desktopBtn.classList.add('nav-active');
+
+            const mobileBtn = document.getElementById(`btn-mobile-${tabName}`);
+            if (mobileBtn) {
+                mobileBtn.classList.remove('text-gray-400');
+                mobileBtn.classList.add('text-teal');
+            }
+
+            if (tabName === 'explore') renderExploreTab();
+        }
+
+        function renderExploreTab() {
+            renderExploreHome();
+        }
+
+        // --- EXPLORE TAB LOGIC ---
+        function renderExploreHome() {
+            const profile = JSON.parse(localStorage.getItem('userProfile'));
+            if (!profile) return;
+
+            const dateStr = selectedExploreDate;
+            const data = itineraryHistory[dateStr] || { morning: [], afternoon: [], evening: [], night: [], totalSpend: 0 };
+            
+            // Update Date Display
+            const displayDate = document.getElementById('explore-display-date');
+            const today = new Date().toISOString().split('T')[0];
+            const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+            if (dateStr === today) displayDate.innerText = 'Today';
+            else if (dateStr === tomorrow) displayDate.innerText = 'Tomorrow';
+            else displayDate.innerText = new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+            // Render Slots
+            ['morning', 'afternoon', 'evening', 'night'].forEach(slot => {
+                const slotEl = document.querySelector(`#slot-${slot}`);
+                if (!slotEl) return;
+                const container = slotEl.querySelector('.slot-items');
+                const totalLabel = slotEl.querySelector('.slot-total');
+                const items = data[slot];
+                
+                let slotTotal = items.reduce((sum, item) => sum + item.estCost, 0);
+                totalLabel.innerText = slotTotal > 0 ? `$${slotTotal}` : '';
+
+                if (items.length === 0) {
+                    container.innerHTML = `<p class="text-xs text-gray-400 italic py-4 text-center">Nothing planned yet. Tap + to add something.</p>`;
+                } else {
+                    container.innerHTML = items.map((item, idx) => `
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl group hover:bg-teal/5 transition-all">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-lg shrink-0">${getPlaceholderEmoji(item.category)}</div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-bold text-navy truncate">${item.name}</p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-bold text-teal uppercase">${item.category}</span>
+                                        <span class="text-[10px] text-gray-400">· $${item.estCost}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="removeFromSlot('${slot}', ${idx})" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-300 hover:bg-red-50 hover:text-red-500 shrink-0 opacity-0 group-hover:opacity-100 transition-all">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            });
+
+            // Update Budget Stats
+            const dailyBudget = profile.dailyBudget;
+            const totalSpend = calculateDayTotal(dateStr);
+            const remaining = Math.max(0, dailyBudget - totalSpend);
+            
+            document.getElementById('explore-budget-text').innerText = `$${totalSpend.toFixed(0)} / $${dailyBudget}`;
+            document.getElementById('remaining-text').innerText = `Remaining today: $${remaining.toFixed(0)}`;
+            
+            updateBudgetRing(totalSpend, dailyBudget);
+            updateCategoryBars(data, dailyBudget, profile.budgetSplit || { Stay: 40, Food: 30, Transport: 15, Activities: 10, Shopping: 5 });
+            
+            renderRecentPlaces();
+            renderQuickFacts();
+            lucide.createIcons();
+        }
+
+        function calculateDayTotal(dateStr) {
+            const data = itineraryHistory[dateStr];
+            if (!data) return 0;
+            return ['morning', 'afternoon', 'evening', 'night'].reduce((sum, slot) => {
+                return sum + data[slot].reduce((s, item) => s + item.estCost, 0);
+            }, 0);
+        }
+
+        function updateBudgetRing(spent, limit) {
+            const ring = document.getElementById('budget-ring-svg');
+            const perc = Math.min(100, (spent / limit) * 100);
+            const offset = 534.07 - (534.07 * perc) / 100;
+            ring.style.strokeDashoffset = offset;
+            
+            if (perc < 80) ring.setAttribute('stroke', '#14B8A6');
+            else if (perc < 100) ring.setAttribute('stroke', '#F59E0B');
+            else ring.setAttribute('stroke', '#EF4444');
+        }
+
+        function updateCategoryBars(data, dailyBudget, split) {
+            const container = document.getElementById('category-bars');
+            const categories = ['Stay', 'Food', 'Transport', 'Activities', 'Shopping'];
+            const catMap = { 'Stay': ['Stays'], 'Food': ['Restaurants'], 'Transport': ['Transport'], 'Activities': ['Activities', 'Attractions', 'Events'], 'Shopping': ['Shopping'] };
+            
+            const spends = categories.reduce((obj, cat) => {
+                obj[cat] = 0;
+                ['morning', 'afternoon', 'evening', 'night'].forEach(slot => {
+                    data[slot].forEach(item => {
+                        if (catMap[cat].includes(item.category)) obj[cat] += item.estCost;
+                    });
+                });
+                return obj;
+            }, {});
+
+            container.innerHTML = categories.map(cat => {
+                const target = (dailyBudget * (split[cat] || 0)) / 100;
+                const perc = Math.min(100, (spends[cat] / (target || 1)) * 100);
+                return `
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[10px] font-bold uppercase">
+                            <span class="text-navy">${cat}</span>
+                            <span class="text-gray-400">$${spends[cat].toFixed(0)} / $${target.toFixed(0)}</span>
+                        </div>
+                        <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-teal transition-all duration-1000" style="width: ${perc}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- DATE LOGIC ---
+        function changeExploreDate(days) {
+            const d = new Date(selectedExploreDate);
+            d.setDate(d.getDate() + days);
+            selectedExploreDate = d.toISOString().split('T')[0];
+            renderExploreHome();
+        }
+
+        // --- MODAL LOGIC ---
+        function openAddModal(slot) {
+            addSlotTarget = slot;
+            document.getElementById('add-modal-title').innerText = `Add to ${slot.charAt(0).toUpperCase() + slot.slice(1)}`;
+            document.getElementById('modal-add-place').classList.remove('hidden');
+            searchPlaces('');
+        }
+
+        function closeAddModal() {
+            document.getElementById('modal-add-place').classList.add('hidden');
+        }
+
+        function filterAddModal(cat) {
+            exploreFilterCategory = cat;
+            document.querySelectorAll('.add-filter').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.classList.add('bg-teal', 'text-white');
+                    btn.classList.remove('bg-white', 'text-navy');
+                } else {
+                    btn.classList.remove('bg-teal', 'text-white');
+                    btn.classList.add('bg-white', 'text-navy');
+                }
+            });
+            searchPlaces(document.querySelector('#modal-add-place input').value);
+        }
+
+        let currentDetailItem = null;
+
+        function searchPlaces(val) {
+            const query = val.toLowerCase();
+            const results = PLACES_DB.filter(p => {
+                const matchQuery = p.name.toLowerCase().includes(query) || p.city.toLowerCase().includes(query) || p.category.toLowerCase().includes(query);
+                const matchCat = exploreFilterCategory === 'All' || p.category === exploreFilterCategory;
+                return matchQuery && matchCat;
+            }).concat(customPlaces.filter(p => p.name.toLowerCase().includes(query)));
+
+            const container = document.getElementById('add-modal-results');
+            container.innerHTML = results.slice(0, 20).map(p => `
+                <div onclick="showAddDetails('${p.id}')" class="bg-gray-50 p-4 rounded-2xl border border-gray-100 hover:border-teal/50 hover:bg-white transition-all cursor-pointer group">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-[10px] font-bold text-teal uppercase">${p.category}</span>
+                        <div class="flex items-center text-xs font-bold text-navy"><i data-lucide="star" class="w-3 h-3 fill-yellow-400 text-yellow-400 mr-1"></i> ${p.rating || 'New'}</div>
+                    </div>
+                    <h5 class="font-bold text-navy group-hover:text-teal mb-1">${p.name}</h5>
+                    <p class="text-xs text-gray-400 mb-2">${p.city}, ${p.country}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-navy">$${p.estCost}</span>
+                        ${favoritePlaces.some(f => f.id === p.id) ? '<i data-lucide="heart" class="w-3 h-3 fill-red-500 text-red-500"></i>' : ''}
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function showAddDetails(pid) {
+            const place = PLACES_DB.find(p => p.id === pid) || customPlaces.find(p => p.id === pid);
+            if (!place) return;
+            currentDetailItem = place;
+
+            const panel = document.getElementById('add-modal-details');
+            panel.classList.remove('hidden');
+            
+            document.getElementById('detail-emoji').innerText = getPlaceholderEmoji(place.category);
+            document.getElementById('detail-name').innerText = place.name;
+            document.getElementById('detail-loc').innerText = `${place.city}, ${place.country}`;
+            document.getElementById('detail-desc').innerText = place.desc;
+            document.getElementById('detail-cost-edit').value = place.estCost;
+            document.getElementById('detail-add-btn').onclick = () => {
+                const finalCost = parseFloat(document.getElementById('detail-cost-edit').value);
+                addPlaceToSlot(pid, finalCost);
+            };
+            
+            updateFavStatus();
+            lucide.createIcons();
+        }
+
+        function hideAddDetails() {
+            document.getElementById('add-modal-details').classList.add('hidden');
+        }
+
+        function toggleFavoriteCurrent() {
+            if (!currentDetailItem) return;
+            const idx = favoritePlaces.findIndex(f => f.id === currentDetailItem.id);
+            if (idx > -1) favoritePlaces.splice(idx, 1);
+            else favoritePlaces.push(currentDetailItem);
+            
+            localStorage.setItem('favoritePlaces', JSON.stringify(favoritePlaces));
+            updateFavStatus();
+            searchPlaces(document.querySelector('#modal-add-place input').value);
+        }
+
+        function updateFavStatus() {
+            const btn = document.getElementById('detail-fav-btn');
+            const isFav = favoritePlaces.some(f => f.id === currentDetailItem.id);
+            if (isFav) {
+                btn.classList.add('text-red-500', 'bg-red-50', 'fill-red-500');
+            } else {
+                btn.classList.remove('text-red-500', 'bg-red-50', 'fill-red-500');
+            }
+        }
+
+        function addPlaceToSlot(pid, editedCost) {
+            const place = PLACES_DB.find(p => p.id === pid) || customPlaces.find(p => p.id === pid);
+            if (!place) return;
+
+            const dateStr = selectedExploreDate;
+            if (!itineraryHistory[dateStr]) {
+                itineraryHistory[dateStr] = { morning: [], afternoon: [], evening: [], night: [], totalSpend: 0 };
+            }
+
+            const itemToAdd = { ...place, estCost: editedCost !== undefined ? editedCost : place.estCost };
+            itineraryHistory[dateStr][addSlotTarget].push(itemToAdd);
+            
+            // Add to recent
+            recentPlaces = [place, ...recentPlaces.filter(p => p.id !== place.id)].slice(0, 10);
+            
+            localStorage.setItem('itineraryHistory', JSON.stringify(itineraryHistory));
+            localStorage.setItem('recentPlaces', JSON.stringify(recentPlaces));
+            
+            closeAddModal();
+            hideAddDetails();
+            renderExploreHome();
+        }
+
+        function removeFromSlot(slot, idx) {
+            itineraryHistory[selectedExploreDate][slot].splice(idx, 1);
+            localStorage.setItem('itineraryHistory', JSON.stringify(itineraryHistory));
+            renderExploreHome();
+        }
+
+        // --- CUSTOM PLACE ---
+        function openCustomPlace() {
+            document.getElementById('modal-custom-place').classList.remove('hidden');
+        }
+
+        function saveCustomPlace() {
+            const name = document.getElementById('custom-name').value;
+            const cat = document.getElementById('custom-cat').value;
+            const cost = parseFloat(document.getElementById('custom-cost').value);
+            
+            if (!name || isNaN(cost)) return alert('Please fill all fields');
+            
+            const newItem = { id: 'c' + Date.now(), name, category: cat, estCost: cost, city: 'Custom', country: '', rating: 0, desc: 'Added by user', hours: '-' };
+            customPlaces.push(newItem);
+            localStorage.setItem('customPlaces', JSON.stringify(customPlaces));
+            
+            addPlaceToSlot(newItem.id);
+            closeOverlay('modal-custom-place');
+        }
+
+        // --- QUICK FACTS PANEL ---
+        let activeQuickTab = 'weather';
+        function switchQuickTab(tab) {
+            activeQuickTab = tab;
+            document.querySelectorAll('.q-tab').forEach(btn => {
+                if (btn.dataset.qtab === tab) { btn.classList.add('opacity-100', 'border-teal'); btn.classList.remove('opacity-40'); }
+                else { btn.classList.remove('opacity-100', 'border-teal'); btn.classList.add('opacity-40'); }
+            });
+            renderQuickFacts();
+        }
+
+        function renderQuickFacts() {
+            const profile = JSON.parse(localStorage.getItem('userProfile')) || {};
+            const dest = activeTrip ? DESTINATIONS.find(d => d.id === activeTrip.destinationId) : { name: profile.homeCity || 'New Delhi', country: 'India', language: 'Hindi/English', currency: profile.currency || 'USD' };
+            const content = document.getElementById('quick-facts-content');
+            if (!content) return;
+            
+            const data = {
+                weather: { temp: '26°C', emoji: '☀️', note: 'Sunny and pleasant' },
+                time: { offset: '+5:30', note: 'Always on time' },
+                cash: { rate: `1 USD = 83.12 INR`, note: 'Static rate for demo' },
+                talk: { hello: 'Namaste', thanks: 'Dhanyavad', where: 'Kidhar?', howmuch: 'Kitna?', help: 'Bachao!' },
+                sos: { police: '100', ambulance: '102', help: '112' }
+            };
+
+            if (activeQuickTab === 'weather') {
+                content.innerHTML = `<div class="flex items-center gap-4"><span class="text-5xl">${data.weather.emoji}</span><div><p class="text-3xl font-black">${data.weather.temp}</p><p class="text-sm opacity-60">${data.weather.note}</p></div></div>`;
+            } else if (activeQuickTab === 'time') {
+                content.innerHTML = `<p class="text-xs uppercase font-bold opacity-60 mb-2">Local Time in ${dest.name}</p><div id="live-clock" class="text-4xl font-black">--:--:--</div>`;
+                updateLiveClock();
+            } else if (activeQuickTab === 'cash') {
+                content.innerHTML = `<p class="text-xs uppercase font-bold opacity-60 mb-2">Currency Reference</p><p class="text-xl font-bold">${data.cash.rate}</p><p class="text-xs opacity-60 mt-2">Preferred: Cards & UPI</p>`;
+            } else if (activeQuickTab === 'talk') {
+                content.innerHTML = `<div class="grid grid-cols-2 gap-3">${Object.entries(data.talk).map(([k, v]) => `<div><p class="text-[10px] font-bold uppercase opacity-60">${k}</p><p class="text-sm font-bold">${v}</p></div>`).join('')}</div>`;
+            } else if (activeQuickTab === 'sos') {
+                content.innerHTML = `<div class="space-y-3">${Object.entries(data.sos).map(([k, v]) => `<div class="flex justify-between items-center"><div><p class="text-[10px] font-bold uppercase opacity-60">${k}</p><p class="text-sm font-bold">${v}</p></div><button class="bg-red-500/20 text-red-500 px-3 py-1 rounded-lg text-xs font-bold">CALL</button></div>`).join('')}</div>`;
+            }
+        }
+
+        function updateLiveClock() {
+            const clock = document.getElementById('live-clock');
+            if (!clock) return;
+            clock.innerText = new Date().toLocaleTimeString();
+            if (activeQuickTab === 'time') setTimeout(updateLiveClock, 1000);
+        }
+
+        // --- WEEKLY VIEW ---
+        function toggleWeeklyView() {
+            document.getElementById('modal-weekly').classList.remove('hidden');
+            renderWeeklyChart();
+        }
+
+        function renderWeeklyChart() {
+            const chart = document.getElementById('weekly-chart');
+            const profile = JSON.parse(localStorage.getItem('userProfile'));
+            const dailyBudget = profile ? profile.dailyBudget : 100;
+            
+            // Get last 7 days of totals
+            const totals = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                totals.push(calculateDayTotal(dateStr));
+            }
+
+            const max = Math.max(...totals, dailyBudget) || 1;
+            
+            chart.innerHTML = totals.map((t, idx) => {
+                const h = (t / max) * 100;
+                const budgetH = (dailyBudget / max) * 100;
+                return `
+                    <div class="flex-1 relative group h-full">
+                        <div class="absolute bottom-0 left-0 w-full bg-teal/10 rounded-t-lg transition-all duration-1000" style="height: ${h}%"></div>
+                        <div class="absolute bottom-0 left-0 w-full bg-teal rounded-t-lg opacity-0 group-hover:opacity-100 transition-all cursor-pointer" style="height: ${h}%">
+                            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-navy text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">$${t}</div>
+                        </div>
+                        <!-- Goal Line -->
+                        <div class="absolute left-0 w-full border-t border-dashed border-red-400 opacity-30 pointer-events-none" style="bottom: ${budgetH}%"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderRecentPlaces() {
+            const container = document.getElementById('recent-places-list');
+            if (recentPlaces.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-400 py-4">No recent places yet.</p>`;
+                return;
+            }
+            container.innerHTML = recentPlaces.map(p => `
+                <div onclick="addPlaceToSlot('${p.id}')" class="flex-shrink-0 w-40 bg-white p-4 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md cursor-pointer transition-all">
+                    <div class="text-lg mb-2">${getPlaceholderEmoji(p.category)}</div>
+                    <p class="text-xs font-bold text-navy truncate">${p.name}</p>
+                    <p class="text-[10px] text-teal font-bold uppercase">${p.category}</p>
+                </div>
+            `).join('');
+        }
+
+        function getPlaceholderEmoji(cat) {
+            const map = { 'Restaurants': '🍴', 'Attractions': '🏛️', 'Events': '🎟️', 'Activities': '🤿', 'Stays': '🏨', 'Shopping': '🛍️', 'Transport': '🚕' };
+            return map[cat] || '📍';
+        }
+
+        // --- UTILS ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+            
+            // Mobile menu logic
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

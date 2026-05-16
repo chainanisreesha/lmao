@@ -1,0 +1,8 @@
+{
+  "name": "WanderWise",
+  "description": "An AI-powered travel companion for seamless trip planning and navigation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
